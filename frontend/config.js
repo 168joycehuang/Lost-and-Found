@@ -1,5 +1,5 @@
 window.PINEFINDER_CONFIG = {
-  supabaseUrl: "",
-  supabaseKey: "",
-  storageBucket: "pinefinder-photos",
+  supabaseUrl: "https://arpbozqwljspgxzwgmqq.supabase.co",
+  supabaseKey: "sb_publishable_1sC3pBTg4amkeC8HTyn1uA_jW4sjtFI",
+  storageBucket: "lost-items",
 };
