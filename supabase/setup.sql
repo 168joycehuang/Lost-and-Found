@@ -62,8 +62,8 @@ grant execute on function public.claim_lost_item(text) to anon;
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
-  'pinefinder-photos',
-  'pinefinder-photos',
+  'lost-items',
+  'lost-items',
   true,
   8388608,
   array['image/jpeg', 'image/png', 'image/webp']
@@ -78,9 +78,9 @@ grant insert, select on storage.objects to anon;
 drop policy if exists "Anyone can upload PineFinder photos" on storage.objects;
 create policy "Anyone can upload PineFinder photos"
   on storage.objects for insert to anon
-  with check (bucket_id = 'pinefinder-photos');
+  with check (bucket_id = 'lost-items');
 
 drop policy if exists "Anyone can read PineFinder photos" on storage.objects;
 create policy "Anyone can read PineFinder photos"
   on storage.objects for select to anon
-  using (bucket_id = 'pinefinder-photos');
+  using (bucket_id = 'lost-items');

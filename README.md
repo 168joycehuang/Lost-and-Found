@@ -15,7 +15,7 @@ Browser → GitHub Pages (frontend/)
 ## 一次性 Supabase 設定
 
 1. 在 Supabase 建立或選取專案。
-2. 打開 SQL Editor，執行 [`supabase/setup.sql`](supabase/setup.sql)。此腳本會建立 `public.lost_items`、RLS policies、原子領取 RPC，並建立／設定公開 bucket `pinefinder-photos`。
+2. 打開 SQL Editor，執行 [`supabase/setup.sql`](supabase/setup.sql)。此腳本會建立 `public.lost_items`、RLS policies、原子領取 RPC，並建立／設定公開 bucket `lost-items`。
 3. 到 Project Settings → API Keys，複製專案 URL 及 **Publishable key**（`sb_publishable_...`；舊版 `anon` key 亦可）。不要複製 Secret／`service_role` key。
 4. 編輯 [`frontend/config.js`](frontend/config.js)：
 
@@ -23,7 +23,7 @@ Browser → GitHub Pages (frontend/)
    window.PINEFINDER_CONFIG = {
      supabaseUrl: "https://<project-ref>.supabase.co",
      supabaseKey: "sb_publishable_...",
-     storageBucket: "pinefinder-photos",
+     storageBucket: "lost-items",
    };
    ```
 
