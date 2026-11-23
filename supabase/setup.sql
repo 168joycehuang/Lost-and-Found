@@ -2,10 +2,14 @@
 create table if not exists public.lost_items (
   id text primary key,
   name text not null check (char_length(btrim(name)) between 1 and 200),
+  subtitle text not null default '' check (char_length(subtitle) <= 240),
   category text not null default '其他' check (char_length(category) <= 80),
   color text not null default '' check (char_length(color) <= 100),
   material text not null default '' check (char_length(material) <= 150),
   features text not null default '' check (char_length(features) <= 500),
+  other_feature_1 text not null default '' check (char_length(other_feature_1) <= 500),
+  other_feature_2 text not null default '' check (char_length(other_feature_2) <= 500),
+  other_feature_3 text not null default '' check (char_length(other_feature_3) <= 500),
   keywords text not null check (char_length(keywords) <= 1000),
   location text not null check (char_length(btrim(location)) between 1 and 200),
   found_at date not null default (now() at time zone 'Asia/Taipei')::date,
@@ -19,6 +23,22 @@ create table if not exists public.lost_items (
   created_at timestamptz not null default now(),
   claimed_at timestamptz
 );
+
+alter table public.lost_items
+  add column if not exists subtitle text not null default '' check (char_length(subtitle) <= 240);
+
+alter table public.lost_items
+  add column if not exists other_feature_1 text not null default '' check (char_length(other_feature_1) <= 500),
+  add column if not exists other_feature_2 text not null default '' check (char_length(other_feature_2) <= 500),
+  add column if not exists other_feature_3 text not null default '' check (char_length(other_feature_3) <= 500);
+
+alter table public.lost_items
+  drop constraint if exists lost_items_other_feature_1_single_item_check,
+  drop constraint if exists lost_items_other_feature_2_single_item_check,
+  drop constraint if exists lost_items_other_feature_3_single_item_check,
+  add constraint lost_items_other_feature_1_single_item_check check (other_feature_1 !~ '[、,，;；\n]'),
+  add constraint lost_items_other_feature_2_single_item_check check (other_feature_2 !~ '[、,，;；\n]'),
+  add constraint lost_items_other_feature_3_single_item_check check (other_feature_3 !~ '[、,，;；\n]');
 
 create index if not exists lost_items_pending_found_at_idx
   on public.lost_items (found_at desc)

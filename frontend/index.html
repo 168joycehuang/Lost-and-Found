@@ -37,6 +37,7 @@ textarea.in{line-height:1.6;resize:none}select.in{appearance:none;-webkit-appear
 .ph .x{position:absolute;top:-2px;right:-2px;width:26px;height:26px;border-radius:50%;background:var(--card);border:1px solid var(--line);display:grid;place-items:center}
 .drop{display:flex;flex-direction:column;align-items:center;gap:10px;border:2px dashed #CBB89C;border-radius:20px;padding:34px 20px;background:var(--card);cursor:pointer;text-align:center}
 .tag{display:flex;align-items:center;gap:8px;background:var(--chip);border-radius:999px;padding:4px 14px}.tag label{font-size:12.5px;font-weight:600;white-space:nowrap;color:var(--brown)}.tag input{flex:1;min-width:0;background:none;border:0;outline:0;font-size:12.5px;font-weight:600;padding:6px 2px;color:var(--brown)}
+.tag input[readonly]{cursor:default}.tag-edit{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:50%;color:var(--brown);opacity:.7}.tag-edit:hover,.tag-edit:focus-visible{background:var(--card);opacity:1}
 .mk{position:relative;width:56px;height:56px;border-radius:12px;overflow:hidden}.mk img{width:100%;height:100%;object-fit:cover}
 .res{display:flex;gap:12px;width:100%;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;position:relative}.res.top{border:2px solid var(--gold);box-shadow:0 12px 24px rgba(229,169,59,.18)}
 .th{width:64px;height:64px;border-radius:14px;flex:none;display:grid;place-items:center;background:linear-gradient(135deg,#9FB89A,#6F8F6A);overflow:hidden}.th img{width:100%;height:100%;object-fit:cover}
@@ -83,8 +84,6 @@ const CONFIG=window.PINEFINDER_CONFIG||{};
 const SUPABASE_URL=String(CONFIG.supabaseUrl||'').replace(/\/$/,'');
 const SUPABASE_KEY=String(CONFIG.supabaseKey||'');
 const STORAGE_BUCKET=String(CONFIG.storageBucket||'lost-items');
-const CATS=[['傘','傘'],['水壺','水壺'],['保溫','水壺'],['鑰匙','鑰匙'],['學生證','證件'],['證','證件'],['卡','卡片'],['耳機','耳機'],['筆電','筆電'],['書','書籍'],['錢包','錢包'],['外套','衣物']];
-const COLORS=['黑','白','藍','紅','綠','粉','黃','灰','棕','紫'];
 const IMAGE_TYPES={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'};
 const ensureConfigured=()=>{if(!SUPABASE_URL||!SUPABASE_KEY)throw Error('尚未設定 Supabase。請依 README 設定 frontend/config.js 的專案網址與 anon/publishable key。')};
 const supabaseRequest=async(path,{headers={},...options}={})=>{
@@ -97,24 +96,34 @@ const supabaseRequest=async(path,{headers={},...options}={})=>{
  return data
 };
 const publicPhotoUrl=path=>/^https?:\/\//i.test(path)?path:`${SUPABASE_URL}/storage/v1/object/public/${encodeURIComponent(STORAGE_BUCKET)}/${path.split('/').map(encodeURIComponent).join('/')}`;
-const apiItem=row=>{const photos=(row.photos||[]).map(publicPhotoUrl);return{id:row.id,name:row.name,cat:row.category,color:row.color,mat:row.material,feat:row.features,kw:row.keywords,loc:row.location,date:row.found_at,store:row.pickup_location,contact:row.contact,photos,photo:photos[0]||null,status:row.status}};
+const apiItem=row=>{const photos=(row.photos||[]).map(publicPhotoUrl),legacyFeatures=(row.features||'').split(/[、,，;；\n]+/).map(value=>value.trim()).filter(Boolean),hasSplitFeatures=Object.hasOwn(row,'other_feature_1');return{id:row.id,name:row.name,subtitle:row.subtitle||'',cat:row.category,color:row.color,other1:hasSplitFeatures?row.other_feature_1||'':legacyFeatures[0]||'',other2:hasSplitFeatures?row.other_feature_2||'':legacyFeatures[1]||'',other3:hasSplitFeatures?row.other_feature_3||'':legacyFeatures.slice(2).join('、'),kw:row.keywords,loc:row.location,date:row.found_at,store:row.pickup_location,contact:row.contact,photos,photo:photos[0]||null,status:row.status}};
 const grams=s=>{const t=s.replace(/\s/g,''),g=new Set();for(let i=0;i<t.length-1;i++)g.add(t.slice(i,i+2));return[...g]};
-const analyzeTitle=title=>{const category=CATS.find(([keyword])=>title.includes(keyword)),color=COLORS.find(value=>title.includes(value)),material=title.match(/不鏽鋼|塑膠|金屬|皮革|布/);return{cat:category?.[1]||'',color:color?`${color}色`:'',mat:material?.[0]||'',feat:''}};
 const uploadPhoto=async photo=>{
  const extension=IMAGE_TYPES[photo.type];
  if(!extension)throw Error('照片僅支援 JPEG、PNG 或 WebP 格式');
  if(photo.size>8*1024*1024)throw Error('單張照片不可超過 8 MB');
  const path=`${ymd(new Date())}/${crypto.randomUUID()}.${extension}`;
  await supabaseRequest(`/storage/v1/object/${encodeURIComponent(STORAGE_BUCKET)}/${path.split('/').map(encodeURIComponent).join('/')}`,{method:'POST',headers:{'Content-Type':photo.type,'x-upsert':'false'},body:photo});
- return publicPhotoUrl(path)
+ return path
 };
 const API={
 async list(){const rows=await supabaseRequest('/rest/v1/lost_items?select=*&status=eq.pending&order=found_at.desc');return rows.map(apiItem)},
-async analyze(f){return analyzeTitle(f.title)},
+async analyze(f){
+ ensureConfigured();
+ const form=new FormData();
+ form.set('title',f.title.trim());
+ f.photoFiles.forEach(file=>form.append('images',file));
+ const response=await fetch(`${SUPABASE_URL}/functions/v1/analyze-item`,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`},body:form});
+ const body=await response.json().catch(()=>null);
+ if(!response.ok)throw Error(body?.error||`AI 辨識失敗（${response.status}）`);
+ if(body?.blocked===true)return{blocked:true};
+ if(!body||typeof body.subtitle!=='string'||!Array.isArray(body.tags)||body.tags.length>3||!Array.isArray(body.imageCategories)||body.imageCategories.length!==f.photoFiles.length||body.imageCategories.some(category=>typeof category!=='string'))throw Error('AI 回傳格式不完整，請重試');
+ return{blocked:false,subtitle:body.subtitle,cat:body.category||'',color:body.color||'',imageCategories:body.imageCategories,other1:body.tags[0]||'',other2:body.tags[1]||'',other3:body.tags[2]||''}
+},
 async report(f){
  const t=f.tags,photoPaths=[];
- for(const photo of f.photoFiles)photoPaths.push(await uploadPhoto(photo));
- const values={id:`PN-${crypto.randomUUID().replaceAll('-','').slice(0,12).toUpperCase()}`,name:f.title.trim(),category:t.cat||'其他',color:t.color,material:t.mat,features:t.feat,keywords:[f.title,t.cat,t.color,t.mat,t.feat].filter(Boolean).join(' '),location:f.area==='other'?f.areaOther.trim():f.area,found_at:ymd(new Date()),pickup_location:f.store==='onsite'?'留在原處':f.storeOther.trim(),contact:f.contact.trim(),photos:photoPaths,status:'pending',created_at:new Date().toISOString()};
+ for(let i=0;i<f.photoFiles.length;i++)photoPaths.push(f.photoPaths[i]||await uploadPhoto(f.photoFiles[i]));
+ const values={id:`PN-${crypto.randomUUID().replaceAll('-','').slice(0,12).toUpperCase()}`,name:f.title.trim(),subtitle:t.subtitle||'',category:t.cat||'其他',color:t.color,material:'',features:'',other_feature_1:t.other1.trim(),other_feature_2:t.other2.trim(),other_feature_3:t.other3.trim(),keywords:[f.title,t.subtitle,t.cat,t.color,t.other1,t.other2,t.other3].filter(Boolean).join(' ').slice(0,1000),location:f.area==='other'?f.areaOther.trim():f.area,found_at:ymd(new Date()),pickup_location:f.store==='onsite'?'留在原處':f.storeOther.trim(),contact:f.contact.trim(),photos:photoPaths,status:'pending',created_at:new Date().toISOString()};
  const rows=await supabaseRequest('/rest/v1/lost_items?select=*',{method:'POST',headers:{'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(values)});
  if(!rows?.length)throw Error('通報已送出，但 Supabase 未回傳新增資料');
  return apiItem(rows[0])
@@ -136,7 +145,7 @@ async search(q){
 };
 
 /* ===== 狀態 ===== */
-const fresh=()=>({found:{title:'',photos:[],photoFiles:[],area:'總圖書館',areaOther:'',store:'onsite',storeOther:'',contact:'',tags:{cat:'',color:'',mat:'',feat:''}},lost:{desc:'',photo:null,photoFile:null,area:'',areaOther:'',from:''},adv:false,res:null,pick:null,last:null,from:'',flt:[],claimed:null,confirm:false,err:''});
+const fresh=()=>({found:{title:'',photos:[],photoFiles:[],photoPaths:[],area:'總圖書館',areaOther:'',store:'onsite',storeOther:'',contact:'',tags:{subtitle:'',cat:'',color:'',other1:'',other2:'',other3:''}},lost:{desc:'',photo:null,photoFile:null,area:'',areaOther:'',from:''},adv:false,res:null,pick:null,last:null,from:'',flt:[],claimed:null,confirm:false,categoryWarning:null,err:''});
 let S=fresh(),cur='';
 const set=(p,v)=>{const k=p.split('.'),l=k.pop();k.reduce((o,x)=>o[x],S)[l]=v};
 
@@ -151,7 +160,7 @@ const qr=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;const N=21,rn
  for(const[x,y]of[[0,0],[14,0],[0,14]])r+=`<rect x="${x}" y="${y}" width="7" height="7"/><rect x="${x+1}" y="${y+1}" width="5" height="5" fill="#fff"/><rect x="${x+2}" y="${y+2}" width="3" height="3"/>`;
  return`<svg width="140" height="140" viewBox="-1 -1 23 23" fill="#241b16" role="img" aria-label="領取憑證 QR Code 示意圖" style="background:#fff;border-radius:8px;display:block;margin:0 auto">${r}</svg>`};
 const busy=m=>{let d=$('.busy');if(!m){d&&d.remove();return}d=document.createElement('div');d.className='busy';d.setAttribute('role','status');d.innerHTML=`<div><svg class="sp" width="44" height="44"><use href="#sq"/></svg><p style="margin:8px 0 0">${m}</p></div>`;document.body.append(d)};
-
+const categoryWarningDialog=({categories})=>`<div class="dlg"><div class="dbox" role="dialog" aria-modal="true" aria-labelledby="category-warning-title"><div style="display:flex;align-items:flex-start;gap:12px"><div style="flex:1"><b id="category-warning-title">照片辨識類別不同</b><p class="p" style="margin-top:8px">各張照片辨識出的類別不同，建議重新檢視照片後再上傳。</p><ul style="margin:10px 0 0;padding-left:22px">${categories.map((category,index)=>`<li>第 ${index+1} 張：${esc(category)}</li>`).join('')}</ul></div><button class="bk" data-act="closeCategoryWarning" aria-label="關閉提醒">${ic('x',16)}</button></div><button class="btn" data-act="continueCategoryWarning">確定並繼續</button></div></div>`;
 /* ===== 畫面 ===== */
 /* 首頁清單使用 API 載入的待認領物品快取 */
 const pending=()=>{const L=[...DB].sort((a,b)=>b.date.localeCompare(a.date));return`<div style="display:flex;flex-direction:column;gap:12px"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2 style="font-size:16px">尚未領取的遺失物</h2><span class="sub">共 ${L.length} 件</span></div>${L.length?L.map(x=>`<button class="res" data-act="view" data-id="${x.id}" aria-label="查看${esc(x.name)}"><span class="th">${x.photo?`<img src="${x.photo}" alt="">`:ic('cone',26,'#fff',1.8)}</span><span style="flex:1"><b style="font-size:14.5px;display:block">${esc(x.name)}</b><span class="sub" style="display:block;margin-top:3px">拾獲於 ${esc(x.loc)}</span><span class="sub" style="display:block;margin-top:2px">${fmt(x.date)}．${rel(x.date)}</span></span></button>`).join(''):`<div class="card ctr sub" style="padding:28px 16px">目前沒有等待領取的遺失物</div>`}</div>`};
@@ -159,25 +168,27 @@ const pending=()=>{const L=[...DB].sort((a,b)=>b.date.localeCompare(a.date));ret
 const home=()=>`<div class="hero"><div style="width:76px;height:76px;border-radius:50%;background:rgba(45,90,39,.12);display:grid;place-items:center">${mascot(54)}</div><div><h1>松果在哪裡</h1><span style="font-size:13.5px">中央大學智慧失物招領平台</span></div></div>
 <div class="bd" style="gap:20px;flex:none"><div class="err" role="alert">公開匿名展示版：請勿提交真實姓名、聯絡方式或證件照片；所有訪客都能查看通報內容並領取物品。</div><button class="big a" data-go="found-1"><span class="ic">${ic('cone',26,'#fff',1.6)}</span><span style="flex:1"><b>我撿到了一個遺失物</b><small>通報拾獲物品，幫同學找回失物</small></span>${ic('next',20,'#fff')}</button>${sbox()}${pending()}</div>`;
 
-const found1=()=>{const f=S.found;return hd('通報拾獲物品','home',1)+`<div class="bd"><p class="p">依標題關鍵字提供標籤建議；請避免上傳包含個人資料的照片。</p>
+const found1=()=>{const f=S.found;return hd('通報拾獲物品','home',1)+`<div class="bd"><p class="p">上傳物品照片後，AI 將依照片及標題提供特徵建議；請避免上傳包含個人資料的照片。</p>
 <div><label class="lb" for="ft">物品標題</label><input id="ft" class="in" data-bind="found.title" value="${esc(f.title)}" placeholder="簡短描述這項物品，如：藍色不鏽鋼水壺"></div>
 <div><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px"><span class="lb" style="margin:0">上傳物品照片</span><span class="sub">已上傳 <b style="color:var(--pine)">${f.photos.length}</b> / 3</span></div>
 <div class="photos">${[0,1,2].map(i=>f.photos[i]?`<div class="ph"><img src="${f.photos[i]}" alt="已上傳的物品照片"><button class="x" data-act="rm" data-i="${i}" aria-label="移除這張照片">${ic('x',13,'var(--cdark)',2.6)}</button></div>`:`<div class="ph"><label>${ic('plus',28,'var(--pine)',2.2)}<input type="file" accept="image/jpeg,image/png,image/webp" hidden data-file="found" aria-label="新增照片"></label></div>`).join('')}</div>
-<div style="display:flex;gap:6px;margin-top:14px;align-items:center;color:var(--cdark)">${ic('shield',14)}<span class="sub" style="font-size:11px;color:var(--cdark)">公開展示模式：照片和聯絡方式可被任何人查看，證件照片不會自動遮蔽。</span></div></div>
+<div style="display:flex;gap:6px;margin-top:14px;align-items:center;color:var(--cdark)">${ic('shield',14)}<span class="sub" style="font-size:11px;color:var(--cdark)">Demo 未啟用真人驗證；AI 呼叫不限制使用者，請勿公開網站或提供不含個資的測試照片。公開展示模式下，照片和聯絡方式可被任何人查看。</span></div></div>
 <div><span class="lb">拾獲地點</span>${sel('fa','found.area',f.area)}${f.area==='other'?`<input class="in" style="margin-top:10px" data-bind="found.areaOther" value="${esc(f.areaOther)}" placeholder="請輸入拾獲地點，如：某棟大樓或場地名稱" aria-label="自填拾獲地點">`:''}</div>
 <div><span class="lb">失主該去哪裡領取</span><div style="display:flex;flex-direction:column;gap:12px">${[['onsite','留在原處','物品留在拾獲地點附近顯眼處，方便失主原地尋獲'],['other','其他（自填）','自行填寫保管地點']].map(([id,t,s])=>`<button class="opt${f.store===id?' on':''}" data-act="store" data-v="${id}"><span class="ico">${ic('pin',20)}</span><span style="flex:1"><b style="font-size:14.5px;display:block;${f.store===id?'color:var(--pine)':''}">${t}</b><span class="sub" style="display:block;margin-top:3px;line-height:1.5">${s}</span></span>${f.store===id?ic('ok',20,'var(--pine)',2.4):''}</button>`).join('')}${f.store==='other'?`<input class="in" data-bind="found.storeOther" value="${esc(f.storeOther)}" placeholder="請輸入保管地點，如：系辦、警衛室" aria-label="自填保管地點">`:''}</div></div>
-<div><label class="lb" for="fc">留下你的聯絡方式（選填）</label><input id="fc" class="in" data-bind="found.contact" value="${esc(f.contact)}" placeholder="展示版請勿輸入真實手機或個人帳號"></div>${err()}</div>`+ft(`<button class="btn" data-act="toStep2">下一步：標籤微調 ${ic('next')}</button>`)};
+<div><label class="lb" for="fc">留下你的聯絡方式（選填）</label><input id="fc" class="in" data-bind="found.contact" value="${esc(f.contact)}" placeholder="展示版請勿輸入真實手機或個人帳號"></div>${err()}</div>`+ft(`<button class="btn" data-act="toStep2">下一步：AI 特徵分析 ${ic('next')}</button>`)};
 
-const found2=()=>{const f=S.found,t=f.tags,sens=['證件','卡片'].includes(t.cat);return hd('標籤微調','found-1',2)+`<div class="bd"><p class="p">以下標籤只依物品標題中的關鍵字建議，並未分析照片；請確認或自行修改。</p>
+const found2=()=>{const f=S.found,t=f.tags,sens=['證件','卡片'].includes(t.cat);return hd('AI 特徵確認','found-1',2)+`<div class="bd"><p class="p">Azure Vision 先擷取圖片特徵，再由 Azure OpenAI 結合標題生成副標題與外觀標籤。結果可能不準確，請確認並自行修改。</p>
 <div class="card" style="box-shadow:0 10px 24px rgba(92,64,51,.08)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">${mascot(28)}<b style="font-size:13px">標籤建議可自行確認與修改</b></div>
 <div style="display:flex;gap:8px;margin-bottom:12px">${f.photos.map(u=>`<div class="mk${sens?' m':''}"><img src="${u}" alt="拾獲物品照片"></div>`).join('')}</div>
-<div class="sub" style="margin-bottom:12px">點擊欄位可修改建議標籤</div>
-<div style="display:flex;flex-direction:column;gap:8px">${[['cat','類別'],['color','顏色'],['mat','材質／品牌'],['feat','特徵']].map(([k,l])=>`<div class="tag"><label for="t${k}">${l}：</label><input id="t${k}" data-bind="found.tags.${k}" value="${esc(t[k])}" placeholder="請補充" aria-label="${l}，可編輯"><span style="color:var(--brown);opacity:.6">${ic('edit',12)}</span></div>`).join('')}</div></div>
+<div class="sub" style="margin-bottom:12px">點擊欄位右側的鉛筆圖示即可編輯</div>
+<div style="display:flex;flex-direction:column;gap:8px">${[['subtitle','副標題',t.subtitle,'請補充'],['cat','類別',t.cat,'請補充'],['color','顏色',t.color,'請補充'],['other1','其他特徵1（選填）',t.other1,'例如姓名貼、特殊標籤或吊飾；沒有可留空'],['other2','其他特徵2（選填）',t.other2,'例如姓名貼、特殊標籤或吊飾；沒有可留空'],['other3','其他特徵3（選填）',t.other3,'例如姓名貼、特殊標籤或吊飾；沒有可留空']].map(([k,l,value,placeholder])=>`<div class="tag"><label for="t${k}">${l}：</label><input id="t${k}" data-bind="found.tags.${k}" value="${esc(value)}" placeholder="${placeholder}" aria-label="${l}" readonly${k.startsWith('other')?' maxlength="500"':''}><button type="button" class="tag-edit" data-act="editFeature" data-id="t${k}" data-label="${l}" aria-label="編輯${l}">${ic('edit',14)}</button></div>`).join('')}</div></div>
 ${sens?`<div class="card" style="display:flex;gap:10px;align-items:flex-start;color:var(--cdark)">${ic('shield',18)}<span style="font-size:12.5px;color:var(--cdark)">證件／卡片照片不會自動遮蔽。公開展示模式請勿上傳真實個資。</span></div>`:''}
 ${err()}</div>`+ft(`<button class="btn" data-act="report">確認送出 ${ic('next')}</button>`)};
 
 const foundDone=()=>{const it=S.last;return`<div class="bd ctr" style="padding-top:64px"><div class="ok">${ic('ok',46,'currentColor',2.2)}</div><div><h2 style="font-size:20px;margin-bottom:8px;line-height:1.5">太棒了！成功上傳了</h2><p class="p" style="font-size:13px">感謝你幫助同學找回遺失的物品</p></div>
 <div class="card" style="width:100%;padding:22px;text-align:left;box-shadow:0 10px 26px rgba(92,64,51,.08)"><div class="sub" style="letter-spacing:1px;margin-bottom:14px">通報紀錄摘要</div><div style="display:flex;flex-direction:column;gap:12px">${row('物品',it.name)}${row('拾獲地點',it.loc)}${row('失主該去哪裡領取',it.store)}${row('備註（聯絡方式）',it.contact||'無')}<div class="row"><span class="sub" style="font-size:12.5px">狀態</span><b style="color:var(--pine);font-weight:700">待認領</b></div></div></div></div>`+ft(`<button class="btn" data-go="home">返回首頁</button>`)};
+
+const safetyWarning=()=>`<div class="bd ctr" style="justify-content:center;padding-top:48px"><div class="err" role="alert" style="max-width:360px;font-size:14px;line-height:1.7">圖片辨識結果可能包含不適合上傳的內容，本次通報已停止；照片未上傳至公開物品資料庫。</div></div>`+ft(`<button class="btn" data-go="home">返回首頁</button>`);
 
 const sbox=()=>{const l=S.lost,fa=flt(l),today=ymd(new Date());return`<div style="display:flex;flex-direction:column;gap:20px"><div class="sbar"><label class="plus" aria-label="上傳舊照片">${ic('plus',22)}<input type="file" accept="image/*" hidden data-file="lost"></label>${l.photo?`<span class="pv"><img src="${l.photo}" alt="已上傳的舊照片"><button data-act="rmLost" aria-label="移除照片">${ic('x',11,'#fff',3)}</button></span>`:''}<input id="ld" class="sin" data-bind="lost.desc" value="${esc(l.desc)}" placeholder="描述你弄丟的物品，或點 + 上傳照片" aria-label="描述你弄丟的物品" enterkeyhint="search"><button class="sgo" data-act="search" aria-label="開始尋找我的松果">${ic('search',20,'#fff')}</button><button class="sflt" data-act="adv" aria-label="進階檢索${fa?'（已設定條件）':''}" aria-expanded="${S.adv}">${ic('filter',20,'var(--pine)')}${fa?'<span style="position:absolute;top:7px;right:7px;width:9px;height:9px;border-radius:50%;background:var(--gold);border:1.5px solid var(--card)"></span>':''}</button></div>
 ${S.adv?`<div class="card" style="display:flex;flex-direction:column;gap:18px"><div><label class="lb" for="la">遺失地點</label>${sel('la','lost.area',l.area,1)}${l.area==='other'?`<input class="in" style="margin-top:10px" data-bind="lost.areaOther" value="${esc(l.areaOther)}" placeholder="請輸入遺失地點，如：某棟大樓或場地名稱" aria-label="自填遺失地點">`:''}</div>
@@ -187,12 +198,12 @@ ${fa?`<button class="btn g" data-act="clrFlt" style="padding:11px;font-size:13.5
 const lost2=()=>hd('相似度排行','home')+`<div class="bd" style="gap:14px"><p class="p" style="font-size:12.5px">相似度依文字關鍵字計算；上傳照片目前只提供示意分數，沒有進行影像辨識。</p>${S.flt&&S.flt.length?`<p class="sub" style="margin:0">已套用條件：${S.flt.map(esc).join('．')}</p>`:''}${S.res.length?S.res.map((x,n)=>`<button class="res${n?'':' top'}" data-act="pick" data-id="${x.id}" aria-label="查看${esc(x.name)}，相似度 ${x.pct}%">${n?'':'<span class="badge">最佳配對</span>'}<span class="th">${x.photo?`<img src="${x.photo}" alt="">`:ic('cone',26,'#fff',1.8)}</span><span style="flex:1"><b style="font-size:14.5px;display:block">${esc(x.name)}</b><span class="sub" style="display:block;margin-top:3px">拾獲於 ${esc(x.loc)}．${rel(x.date)}</span><span style="display:flex;align-items:center;gap:4px;margin-top:8px;font-size:13px;font-weight:700;color:${n?'var(--brown)':'var(--sub)'}">${n?ic('cone',14,'var(--gold)'):''}${x.pct}% 相似度</span></span></button>`).join(''):`<div class="card ctr sub" style="padding:28px 16px">阿果還沒找到相似的松果。回上一步調整描述，或放寬進階檢索的條件，再試一次。</div>`}<p class="sub" style="text-align:center;margin:0">沒有看到你的物品？試著提供更多線索</p></div>`;
 
 const item=()=>{const it=S.pick,sens=['證件','卡片'].includes(it.cat),ph=it.photos||[],when=fmt(it.date)+'（'+rel(it.date)+'）',
- tg=[['類別',it.cat],['顏色',it.color],['材質／品牌',it.mat],['特徵',it.feat]].filter(([,v])=>v),
+ tg=[['類別',it.cat],['顏色',it.color],['其他特徵1',it.other1],['其他特徵2',it.other2],['其他特徵3',it.other3]].filter(([,v])=>v),
  st=it.store==='留在原處'?'留在原處（'+it.loc+' 附近）':it.store;
  return hd('物品詳情',S.from==='home'?'home':'lost-2')+`<div class="bd" style="gap:18px">
 <div class="gal" aria-label="物品照片，可左右滑動">${ph.length?ph.map((u,i)=>`<div class="sl${sens?' m':''}"><img src="${u}" alt="${esc(it.name)}照片 ${i+1}"></div>`).join(''):`<div class="sl" role="img" aria-label="尚無照片">${ic('cone',56,'#fff',1.6)}</div>`}</div>
 ${ph.length>1?`<div class="sub" style="text-align:center;margin-top:-8px">左右滑動查看全部 ${ph.length} 張照片</div>`:''}
-<div><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px"><h2 style="font-size:20px;line-height:1.4">${esc(it.name)}</h2><span class="st">待認領</span></div>${it.pct!=null?`<div class="sub" style="margin-top:4px">${it.pct}% 相似度</div>`:''}</div>
+<div><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px"><h2 style="font-size:20px;line-height:1.4">${esc(it.name)}</h2><span class="st">待認領</span></div>${it.subtitle?`<div class="sub" style="margin-top:4px">${esc(it.subtitle)}</div>`:''}${it.pct!=null?`<div class="sub" style="margin-top:4px">${it.pct}% 相似度</div>`:''}</div>
 ${tg.length?`<div><span class="lb">物品特徵</span><div class="tgs">${tg.map(([k,v])=>`<span class="tg2"><small>${k}</small>${esc(v)}</span>`).join('')}</div></div>`:''}
 <div class="card" style="display:flex;flex-direction:column;gap:12px">${row('拾獲地點',it.loc)}${row('拾獲時間',when)}${row('領取地點',st)}${row('拾獲者聯絡方式',it.contact||'未提供')}</div>
 ${sens?`<div class="card" style="display:flex;gap:10px;align-items:flex-start;color:var(--cdark)">${ic('shield',18)}<span style="font-size:12.5px;color:var(--cdark)">證件／卡片照片不會自動遮蔽。公開展示模式請勿上傳真實個資。</span></div>`:''}</div>${S.confirm?`<div class="dlg"><div class="dbox" role="dialog" aria-modal="true" aria-labelledby="dt"><h2 id="dt" style="font-size:17px;line-height:1.6">請確認遺失物為本人之物品並確實領取後再點擊</h2><p class="p">是否已確認並領取「${esc(it.name)}」？</p><div class="dbtn"><button class="btn g" data-act="cancelClaim" data-autofocus>否</button><button class="btn" data-act="doClaim">是</button></div></div></div>`:''}`+ft(`<button class="btn" data-act="claim">領取遺失物</button><button class="btn g" data-go="home">回到首頁</button>`)};
@@ -200,22 +211,25 @@ ${sens?`<div class="card" style="display:flex;gap:10px;align-items:flex-start;co
 const claimDone=()=>{const it=S.claimed;return`<div class="bd ctr" style="padding-top:64px"><div class="ok">${ic('ok',46,'currentColor',2.2)}</div><div><h2 style="font-size:20px;margin-bottom:8px;line-height:1.5">領取完成！</h2><p class="p" style="font-size:13px">「${esc(it.name)}」已標記為已領取</p></div></div>`+ft(`<button class="btn" data-go="home">返回首頁</button>`)};
 
 /* ===== 路由與事件 ===== */
-const R={home,'found-1':found1,'found-2':found2,'found-done':foundDone,'lost-2':lost2,item,'claim-done':claimDone};
+const R={home,'found-1':found1,'found-2':found2,'found-done':foundDone,'safety-warning':safetyWarning,'lost-2':lost2,item,'claim-done':claimDone};
 const need={'found-2':()=>S.found.photos.length,'found-done':()=>S.last,'lost-2':()=>S.res,'item':()=>S.pick,'claim-done':()=>S.claimed};
 function render(){let k=location.hash.slice(1)||'home';if(!R[k]||(need[k]&&!need[k]())){location.replace('#home');return}
  if(k==='home'&&cur!=='home'&&cur!=='lost-2')S=fresh();if(k!==cur){S.err='';S.confirm=false;cur=k;window.scrollTo(0,0)}
- $('#app').innerHTML=R[k]();{const a=$('[data-autofocus]');a&&a.focus({preventScroll:true})}document.title=k==='home'?'松果在哪裡 PineFinder':'松果在哪裡｜'+(k.startsWith('found')?'通報拾獲':'協尋失物')}
+ $('#app').innerHTML=R[k]()+ (k==='found-1'&&S.categoryWarning?categoryWarningDialog(S.categoryWarning):'');{const a=$('[data-autofocus]');a&&a.focus({preventScroll:true})}document.title=k==='home'?'松果在哪裡 PineFinder':k==='safety-warning'?'松果在哪裡｜內容安全提醒':'松果在哪裡｜'+(k.startsWith('found')?'通報拾獲':'協尋失物')}
 const re=()=>{const y=scrollY;render();scrollTo(0,y)},fail=m=>{S.err=m;re()},go=h=>{location.hash=h};
 addEventListener('hashchange',render);
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.confirm){S.confirm=false;re()}if(e.key==='Enter'&&e.target.id==='ld')$('[data-act=search]').click()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.confirm){S.confirm=false;re()}if(e.key==='Escape'&&S.categoryWarning){S.categoryWarning=null;re()}if(e.key==='Enter'&&e.target.id==='ld')$('[data-act=search]').click()});
 document.addEventListener('input',e=>{const p=e.target.dataset.bind;if(p&&e.target.tagName!=='SELECT')set(p,e.target.value)});
 document.addEventListener('change',e=>{const t=e.target,d=t.dataset;
  if(d.bind&&(t.tagName==='SELECT'||t.type==='date')){set(d.bind,t.value);re()}
- if(d.file&&t.files[0]){const file=t.files[0];if(d.file==='found'&&S.found.photoFiles.length>=3){t.value='';return fail('每筆通報最多上傳 3 張照片')}if(!IMAGE_TYPES[file.type]){t.value='';return fail('照片僅支援 JPEG、PNG 或 WebP 格式')}if(file.size>8*1024*1024){t.value='';return fail('單張照片不可超過 8 MB')}const u=URL.createObjectURL(file);if(d.file==='found'){S.found.photos.push(u);S.found.photoFiles.push(file)}else{S.lost.photo=u;S.lost.photoFile=file}S.err='';re()}});
+ if(d.file&&t.files[0]){const file=t.files[0];if(d.file==='found'&&S.found.photoFiles.length>=3){t.value='';return fail('每筆通報最多上傳 3 張照片')}if(!IMAGE_TYPES[file.type]){t.value='';return fail('照片僅支援 JPEG、PNG 或 WebP 格式')}if(file.size>8*1024*1024){t.value='';return fail('單張照片不可超過 8 MB')}const u=URL.createObjectURL(file);if(d.file==='found'){S.categoryWarning=null;S.found.photos.push(u);S.found.photoFiles.push(file);S.found.photoPaths.push(null)}else{S.lost.photo=u;S.lost.photoFile=file}S.err='';re()}});
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-go],[data-act]');if(!b)return;const{go:g,act,i,v,id}=b.dataset,f=S.found,l=S.lost;
  try{
  if(g)return go(g);
- if(act==='rm'){URL.revokeObjectURL(f.photos[+i]);f.photos.splice(+i,1);f.photoFiles.splice(+i,1);re()}
+ if(act==='editFeature'){const field=document.getElementById(id);if(!field)return;field.readOnly=!field.readOnly;b.setAttribute('aria-label',`${field.readOnly?'編輯':'停止編輯'}${b.dataset.label}`);if(!field.readOnly)field.focus()}
+ else if(act==='rm'){URL.revokeObjectURL(f.photos[+i]);f.photos.splice(+i,1);f.photoFiles.splice(+i,1);f.photoPaths.splice(+i,1);S.categoryWarning=null;re()}
+ else if(act==='closeCategoryWarning'){S.categoryWarning=null;re()}
+ else if(act==='continueCategoryWarning'){if(!S.categoryWarning?.analysis)return fail('找不到照片辨識結果，請重新分析');f.tags=S.categoryWarning.analysis;S.categoryWarning=null;go('found-2')}
  else if(act==='store'){f.store=v;re()}
 
  else if(act==='clrFlt'){l.area='';l.areaOther='';l.from='';re()}
@@ -224,11 +238,13 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-go],
  else if(act==='toStep2'){
   if(!f.photos.length)return fail('請至少上傳 1 張物品照片才能繼續');
   if(!f.title.trim())return fail('請填寫物品標題');
-  if(f.area==='other'&&!f.areaOther.trim())return fail('請輸入拾獲地點');
-  if(f.store==='other'&&!f.storeOther.trim())return fail('請輸入保管地點');
-  busy('阿果正在整理標籤建議⋯');f.tags=await API.analyze(f);busy();go('found-2')}
+   if(f.area==='other'&&!f.areaOther.trim())return fail('請輸入拾獲地點');
+   if(f.store==='other'&&!f.storeOther.trim())return fail('請輸入保管地點');
+   busy('Azure Vision 與 AI 正在整理物品特徵⋯');const analysis=await API.analyze(f);busy();if(analysis.blocked){f.photos.forEach(URL.revokeObjectURL);S.found=fresh().found;go('safety-warning');return}if(new Set(analysis.imageCategories).size>1){S.categoryWarning={categories:analysis.imageCategories,analysis};re();return}S.categoryWarning=null;f.tags=analysis;go('found-2')}
  else if(act==='report'){
-  
+  const featureFields=[['其他特徵1',f.tags.other1],['其他特徵2',f.tags.other2],['其他特徵3',f.tags.other3]];
+  const combinedFeature=featureFields.find(([,value])=>/[、,，;；\n]/.test(value));
+  if(combinedFeature)return fail(`${combinedFeature[0]}請只填一項特徵`);
   busy('阿果正在藏松果⋯');S.last=await API.report(f);DB.unshift(S.last);busy();go('found-done')}
  else if(act==='search'){
   if(!l.photo&&l.desc.trim().length<2)return fail('請輸入物品描述，或點 + 上傳一張照片');

@@ -6,6 +6,7 @@
 Browser → GitHub Pages (frontend/)
         → Supabase REST API (PostgreSQL)
         → Supabase Storage (photos)
+        → Supabase Edge Function → Azure AI Vision → Azure OpenAI
 ```
 
 ## 重要：目前是公開匿名展示版
@@ -30,6 +31,12 @@ Browser → GitHub Pages (frontend/)
    Publishable key 本來就會出現在瀏覽器；安全性依靠正確的 RLS，不是把這個 key 當密碼。請勿在 `config.js` 放任何 Secret／`service_role` key。根目錄舊的 `.env` 不會被靜態前端讀取，且不會部署至 Pages，勿將它提交至 GitHub。
 
 5. 確認 `frontend/config.js` 與 `frontend/index.html` 一起提交並推送。`supabase/setup.sql` 只需在 Supabase SQL Editor 執行，不會部署到 Pages。
+
+## AI 物品特徵
+
+通報時，AI 會分析最多三張照片，提供可編輯的物品描述、類別、顏色及選填特徵。若照片內容觸發安全阻擋，或各張照片辨識出的類別不同，頁面會提示使用者；照片在確認通報前不會上傳至公開 Storage。AI 判斷可能誤判或漏判，請使用者確認辨識結果。照片會交由外部 AI 服務處理，請勿上傳含個人資料的照片。
+
+既有資料庫若尚未拆分其他特徵欄位，請依序在 Supabase SQL Editor 執行 [`supabase/migrations/20261119_split_item_features.sql`](supabase/migrations/20261119_split_item_features.sql) 與 [`supabase/migrations/20261119_enforce_three_single_features.sql`](supabase/migrations/20261119_enforce_three_single_features.sql)；新資料庫請使用 [`supabase/setup.sql`](supabase/setup.sql)。
 
 ## 本機預覽
 
@@ -56,7 +63,7 @@ GitHub Pages 免費使用資格依 repository visibility 和 GitHub 方案而異
 
 - 清單、搜尋、建立通報和領取都由瀏覽器直接呼叫 Supabase REST/Storage API。
 - 照片只接受 JPEG、PNG、WebP；每張上限 8 MiB，每筆最多 3 張。Storage bucket 是公開的。
-- 標籤是依標題關鍵字產生的簡易建議，不是 AI；照片不會被分析。搜尋文字分數為瀏覽器端 2-gram 示意，圖片分數固定為示意值。
+- 通報標籤使用 Azure AI Vision + Azure OpenAI 產生；失主搜尋的文字分數仍為瀏覽器端 2-gram 示意，圖片相似度仍是固定示意值。
 - 領取透過 `claim_lost_item` RPC 原子更新狀態，避免同一筆資料重複領取，但匿名使用者仍可領取任何物品。
 - 沒有校園登入、角色權限、通報者身分驗證、濫用防護或管理介面。
 
