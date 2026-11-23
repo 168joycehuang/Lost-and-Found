@@ -63,10 +63,6 @@ GitHub Pages 免費使用資格依 repository visibility 和 GitHub 方案而異
 
 - 清單、搜尋、建立通報和領取都由瀏覽器直接呼叫 Supabase REST/Storage API。
 - 照片只接受 JPEG、PNG、WebP；每張上限 8 MiB，每筆最多 3 張。Storage bucket 是公開的。
-- 通報標籤使用 Azure AI Vision + Azure OpenAI 產生；失主搜尋的文字分數仍為瀏覽器端 2-gram 示意，圖片相似度仍是固定示意值。
+- 通報標籤使用 Azure AI Vision + Azure OpenAI 產生；失主搜尋必須輸入至少 1 個字的文字描述。文字分數由瀏覽器端 2-gram 計算；可附參考照片，但目前僅加入固定示意分數，不會進行以圖搜圖。
 - 領取透過 `claim_lost_item` RPC 原子更新狀態，避免同一筆資料重複領取，但匿名使用者仍可領取任何物品。
 - 沒有校園登入、角色權限、通報者身分驗證、濫用防護或管理介面。
-
-## 正式開放前必做
-
-先整合學校認可的登入方式，將 RLS 改為 authenticated 使用者並按角色／所有權授權；避免公開聯絡方式；改用私有 Storage、簽名網址與必要的圖片遮蔽；補上濫用防護、資料保留與刪除流程、管理工具、備份與監控。完成後重新檢查 SQL policies，不能只在前端隱藏按鈕。
