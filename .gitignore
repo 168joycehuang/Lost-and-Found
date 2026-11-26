@@ -1,9 +1,33 @@
+# Python
 .venv/
 __pycache__/
 *.py[cod]
+
+# Local databases and runtime files
 *.db
-.env
-.DS_Store
-.vscode/
+*.sqlite
+*.sqlite3
+*.db-journal
 supabase/.temp/
+
+# Environment variables and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Supabase and command-test artifacts
+.test.txt
+test.txt
+*secret*
+
+# macOS and editor files
+.DS_Store
+**/.DS_Store
+.vscode/
+
+# Project-specific notes
 松果在哪裡目前規格書.md

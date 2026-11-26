@@ -1,2 +1,8 @@
 [functions.analyze-item]
 verify_jwt = false
+
+[functions.embed-text]
+verify_jwt = false
+
+[functions.backfill-embeddings]
+verify_jwt = false

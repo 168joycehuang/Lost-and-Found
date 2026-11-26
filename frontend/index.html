@@ -38,39 +38,50 @@ textarea.in{line-height:1.6;resize:none}select.in{appearance:none;-webkit-appear
 .drop{display:flex;flex-direction:column;align-items:center;gap:10px;border:2px dashed #CBB89C;border-radius:20px;padding:34px 20px;background:var(--card);cursor:pointer;text-align:center}
 .tag{display:flex;align-items:center;gap:8px;background:var(--chip);border-radius:999px;padding:4px 14px}.tag label{font-size:12.5px;font-weight:600;white-space:nowrap;color:var(--brown)}.tag input{flex:1;min-width:0;background:none;border:0;outline:0;font-size:12.5px;font-weight:600;padding:6px 2px;color:var(--brown)}
 .tag input[readonly]{cursor:default}.tag-edit{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:50%;color:var(--brown);opacity:.7}.tag-edit:hover,.tag-edit:focus-visible{background:var(--card);opacity:1}
-.mk{position:relative;width:56px;height:56px;border-radius:12px;overflow:hidden}.mk img{width:100%;height:100%;object-fit:cover}
-.res{display:flex;gap:12px;width:100%;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;position:relative}.res.top{border:2px solid var(--gold);box-shadow:0 12px 24px rgba(229,169,59,.18)}
+.edit-photos{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}.edit-photos::-webkit-scrollbar{display:none}
+.edit-photo{position:relative;flex:none;width:100%;aspect-ratio:4/3;border-radius:16px;overflow:hidden;background:var(--chip);scroll-snap-align:center}.edit-photo img{width:100%;height:100%;object-fit:contain}
+.feature-rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.feature-tags{display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px}.feature-row.other-features{margin-top:8px}
+.feature-row{min-width:0}
+.feature-row label{display:block;color:var(--sub);font-size:11.5px;font-weight:700;margin-bottom:6px}
+.feature-control{display:flex;align-items:center;gap:2px}.feature-hash{color:var(--pine);font-weight:700}.feature-control input{width:100%;min-width:0;border:0;background:none;font-size:12.5px;font-weight:600;color:var(--brown);padding:7px 2px;outline:0}
+.feature-pill input::placeholder{color:var(--sub);font-weight:400;opacity:1}
+.feature-pill{display:inline-flex;min-width:0;max-width:100%;background:var(--chip);border-radius:999px;padding:4px 8px}.feature-pill .feature-control{max-width:100%}.feature-pill .feature-control input{width:auto;min-width:1ch;max-width:calc(100vw - 120px);flex:0 1 auto}.feature-pill .tag-edit{width:26px;height:26px}
+.res{display:flex;gap:12px;width:100%;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;position:relative}
 .th{width:64px;height:64px;border-radius:14px;flex:none;display:grid;place-items:center;background:linear-gradient(135deg,#9FB89A,#6F8F6A);overflow:hidden}.th img{width:100%;height:100%;object-fit:cover}
 .badge{position:absolute;top:-10px;left:16px;background:var(--gold);color:#3A2E26;font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:999px}
 .ok{width:88px;height:88px;border-radius:50%;background:var(--gold);display:grid;place-items:center;box-shadow:0 14px 28px rgba(229,169,59,.35);color:#3A2E26}
 .row{display:flex;justify-content:space-between;gap:12px;font-size:12.5px}.row b{font-weight:600;text-align:right}
 .ctr{text-align:center;align-items:center}
-.hero{display:flex;align-items:center;justify-content:center;gap:16px;padding:56px 24px 22px}.hero h1{font-size:26px;color:var(--pine);letter-spacing:2px}
+.hero{display:flex;align-items:center;justify-content:center;gap:16px;padding:20px 24px 22px}.hero h1{font-size:26px;color:var(--pine);letter-spacing:2px}
 .big{display:flex;align-items:center;gap:14px;border-radius:20px;padding:18px;width:100%}.big.a{background:#2D5A27;color:#fff;box-shadow:0 12px 22px rgba(45,90,39,.28)}.big.b{background:var(--card);border:1.5px solid var(--brown)}
 .big .ic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;flex:none}.big.a .ic{background:rgba(255,255,255,.18)}.big.b .ic{background:var(--chip);color:var(--brown)}.big b{display:block;font-size:16px}.big small{font-size:12px;opacity:.85}
 .sbar{display:flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--line);border-radius:28px;padding:10px 10px 10px 14px;box-shadow:0 8px 22px rgba(92,64,51,.08)}.sbar:focus-within{border-color:var(--pine)}
 .plus{width:36px;height:36px;display:grid;place-items:center;border-radius:50%;cursor:pointer;flex:none;color:var(--ink)}.sin{flex:1;min-width:0;border:0;outline:0;background:none;font-size:14.5px;padding:12px 0}
 .sflt{position:relative;width:40px;height:44px;display:grid;place-items:center;flex:none;border-radius:50%}.sflt[aria-expanded=true]{background:var(--ptint)}
 .sgo{width:44px;height:44px;border-radius:50%;background:#2D5A27;display:grid;place-items:center;flex:none}.pv{position:relative;width:40px;height:40px;flex:none}.pv img{width:100%;height:100%;border-radius:10px;object-fit:cover}.pv button{position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:#B23A32;display:grid;place-items:center}
+.to-top{width:44px;height:44px;border-radius:50%;background:var(--pine);color:#fff;display:grid;place-items:center;flex:none;box-shadow:0 3px 10px rgba(45,90,39,.2)}
 .busy{position:fixed;inset:0;background:rgba(30,25,20,.55);display:grid;place-items:center;z-index:9}.busy div{background:var(--card);color:var(--ink);padding:22px 30px;border-radius:20px;text-align:center;font-weight:700}
 .btn.g{background:var(--card);color:var(--pine);border:1.5px solid var(--pine)}
 .gal{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;border-radius:20px;scrollbar-width:none}.gal::-webkit-scrollbar{display:none}
 .sl{position:relative;flex:none;width:100%;aspect-ratio:4/3;border-radius:20px;overflow:hidden;scroll-snap-align:center;display:grid;place-items:center;background:linear-gradient(135deg,#9FB89A,#6F8F6A)}.sl img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;object-position:center;background:var(--card)}
 .st{flex:none;background:var(--ptint);color:var(--pine);font-size:12px;font-weight:700;padding:4px 12px;border-radius:999px;margin-top:4px}
-.tgs{display:flex;flex-wrap:wrap;gap:8px}.tg2{display:inline-flex;align-items:center;gap:6px;background:var(--chip);color:var(--brown);border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:600}.tg2 small{font-size:11px;font-weight:400;color:var(--sub)}
+.tgs{display:flex;flex-wrap:wrap;gap:8px}.tg2{display:inline-flex;align-items:center;background:var(--chip);color:var(--brown);border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:600}
 .dlg{position:fixed;inset:0;background:rgba(30,25,20,.55);display:grid;place-items:center;padding:20px;z-index:9}.dbox{background:var(--card);color:var(--ink);border-radius:20px;padding:22px;width:100%;max-width:360px;display:flex;flex-direction:column;gap:10px}.dbtn{display:flex;gap:10px;margin-top:8px}.dbtn .btn{flex:1}
 input[type=date].in{flex:1;min-width:0;min-height:46px;-webkit-appearance:none;appearance:none}
 .sp{animation:b .7s infinite alternate}@keyframes b{to{transform:translateY(-6px) rotate(-8deg)}}
 @media (prefers-reduced-motion:reduce){.sp{animation:none}}
+.sp{display:grid;place-items:center}
+.mascot-wrap{display:grid;place-items:center;flex:none}.mascot-photo{width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%;display:block}.mascot-fallback{display:none;width:100%;height:100%;place-items:center}
 </style></head><body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="sq" viewBox="0 0 64 64"><path d="M14 20C10 8 24 6 24 18Z" fill="#8B6A4F"/><path d="M50 20C54 8 40 6 40 18Z" fill="#8B6A4F"/><circle cx="32" cy="35" r="20" fill="#D9B48C"/><circle cx="18" cy="39" r="6" fill="#EFD3AE"/><circle cx="46" cy="39" r="6" fill="#EFD3AE"/><circle cx="25" cy="31" r="2.6" fill="#3A2E26"/><circle cx="39" cy="31" r="2.6" fill="#3A2E26"/><path d="M30 41Q32 44.5 34 41Q32 39.2 30 41Z" fill="#3A2E26"/></symbol></svg>
 <div id="app"></div>
 <script src="./config.js"></script>
 <script>
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const P={filter:'M4 7h16M7 12h10M10 17h4',back:'M15 18l-6-6 6-6',next:'M9 6l6 6-6 6',chev:'M6 9l6 6 6-6',edit:'M4 20l4-1 11-11-3-3L5 16z',plus:'M12 5v14M5 12h14',x:'M18 6 6 18M6 6l12 12',shield:'M12 2l7 3v6c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V5z',search:'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-4.3-4.3',cam:'M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM12 9.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7',txt:'M4 6h16M4 12h16M4 18h10',up:'M7 18a4 4 0 0 1-1-7.9A5 5 0 0 1 16 8a4 4 0 0 1 1 7.9M12 12v7M9 15l3-3 3 3',ok:'M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19zM8 12.5l2.5 2.5L16 9.5',cone:'M9.2 10C9.2 7 10.4 5 12 5s2.8 2 2.8 5M7.6 10h8.8c.6 2.2-1 9.4-4.4 11.3C8.6 19.4 7 12.2 7.6 10z',warn:'M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19zM12 8v5M12 16v.01',pin:'M12 21s7-7.4 7-12a7 7 0 1 0-14 0c0 4.6 7 12 7 12zM12 6.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5'};
+const P={filter:'M4 7h16M7 12h10M10 17h4',back:'M15 18l-6-6 6-6',next:'M9 6l6 6-6 6',chev:'M6 9l6 6 6-6',edit:'M4 20l4-1 11-11-3-3L5 16z',plus:'M12 5v14M5 12h14',x:'M18 6 6 18M6 6l12 12',shield:'M12 2l7 3v6c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V5z',search:'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-4.3-4.3',cam:'M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM12 9.5a3.5 3.5 0 1 0 0 7',txt:'M4 6h16M4 12h16M4 18h10',up:'M7 18a4 4 0 0 1-1-7.9A5 5 0 0 1 16 8a4 4 0 0 1 1 7.9M12 12v7M9 15l3-3 3 3',arrowTop:'M12 19V5M5 12l7-7 7 7',ok:'M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19zM8 12.5l2.5 2.5L16 9.5',cone:'M9.2 10C9.2 7 10.4 5 12 5s2.8 2 2.8 5M7.6 10h8.8c.6 2.2-1 9.4-4.4 11.3C8.6 19.4 7 12.2 7.6 10z',warn:'M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19zM12 8v5M12 16v.01',pin:'M12 21s7-7.4 7-12a7 7 0 1 0-14 0c0 4.6 7 12 7 12zM12 6.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5'};
 const ic=(k,s=18,c='currentColor',w=2)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${P[k]}"/></svg>`;
-const mascot=s=>`<svg width="${s}" height="${s}" aria-hidden="true"><use href="#sq"/></svg>`;
+const mascot=s=>{const path=String(window.PINEFINDER_CONFIG?.mascotImage||'./assets/pinecone-mascot.png');return`<span class="mascot-wrap" style="width:${s}px;height:${s}px"><img class="mascot-photo" src="${esc(path)}" alt="松鼠吉祥物" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><span class="mascot-fallback" aria-hidden="true"><svg width="${s}" height="${s}"><use href="#sq"/></svg></span></span>`};
 const Z={工程與資訊區:['工一館','工二館','工三館','資電大樓'],文理法商區:['綜合教學大樓','文學一館','文學二館','客家學院','管理學院二館'],生活運動區:['松苑','依仁堂','羽球館','宵夜街'],公共空間:['總圖書館','大講堂','中大湖']};
 
 /* ===== Supabase REST API ===== */
@@ -96,8 +107,7 @@ const supabaseRequest=async(path,{headers={},...options}={})=>{
  return data
 };
 const publicPhotoUrl=path=>/^https?:\/\//i.test(path)?path:`${SUPABASE_URL}/storage/v1/object/public/${encodeURIComponent(STORAGE_BUCKET)}/${path.split('/').map(encodeURIComponent).join('/')}`;
-const apiItem=row=>{const photos=(row.photos||[]).map(publicPhotoUrl),legacyFeatures=(row.features||'').split(/[、,，;；\n]+/).map(value=>value.trim()).filter(Boolean),hasSplitFeatures=Object.hasOwn(row,'other_feature_1');return{id:row.id,name:row.name,subtitle:row.subtitle||'',cat:row.category,color:row.color,other1:hasSplitFeatures?row.other_feature_1||'':legacyFeatures[0]||'',other2:hasSplitFeatures?row.other_feature_2||'':legacyFeatures[1]||'',other3:hasSplitFeatures?row.other_feature_3||'':legacyFeatures.slice(2).join('、'),kw:row.keywords,loc:row.location,date:row.found_at,store:row.pickup_location,contact:row.contact,photos,photo:photos[0]||null,status:row.status}};
-const grams=s=>{const t=s.replace(/\s/g,''),g=new Set();for(let i=0;i<t.length-1;i++)g.add(t.slice(i,i+2));return[...g]};
+const apiItem=row=>{const photos=(row.photos||[]).map(publicPhotoUrl),legacyFeatures=(row.features||'').split(/[、,，;；\n]+/).map(value=>value.trim()).filter(Boolean),hasSplitFeatures=Object.hasOwn(row,'other_feature_1');return{id:row.id,name:row.name,cat:row.category,color:row.color,other1:hasSplitFeatures?row.other_feature_1||'':legacyFeatures[0]||'',other2:hasSplitFeatures?row.other_feature_2||'':legacyFeatures[1]||'',other3:hasSplitFeatures?row.other_feature_3||'':legacyFeatures.slice(2).join('、'),kw:row.keywords,loc:row.location,date:row.found_at,store:row.pickup_location,contact:row.contact,photos,photo:photos[0]||null,status:row.status}};
 const uploadPhoto=async photo=>{
  const extension=IMAGE_TYPES[photo.type];
  if(!extension)throw Error('照片僅支援 JPEG、PNG 或 WebP 格式');
@@ -107,26 +117,34 @@ const uploadPhoto=async photo=>{
  return path
 };
 const API={
-async list(){const rows=await supabaseRequest('/rest/v1/lost_items?select=*&status=eq.pending&order=found_at.desc');return rows.map(apiItem)},
+async list(){const rows=await supabaseRequest('/rest/v1/lost_items?select=id,name,category,color,features,other_feature_1,other_feature_2,other_feature_3,keywords,location,found_at,pickup_location,contact,photos,status&status=eq.pending&order=found_at.desc');return rows.map(apiItem)},
 async analyze(f){
  ensureConfigured();
  const form=new FormData();
  form.set('title',f.title.trim());
  f.photoFiles.forEach(file=>form.append('images',file));
- const response=await fetch(`${SUPABASE_URL}/functions/v1/analyze-item`,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`},body:form});
+ const response=await fetch(`${SUPABASE_URL}/functions/v1/analyze-item`,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY},body:form});
  const body=await response.json().catch(()=>null);
  if(!response.ok)throw Error(body?.error||`AI 辨識失敗（${response.status}）`);
  if(body?.blocked===true)return{blocked:true};
- if(!body||typeof body.subtitle!=='string'||!Array.isArray(body.tags)||body.tags.length>3||!Array.isArray(body.imageCategories)||body.imageCategories.length!==f.photoFiles.length||body.imageCategories.some(category=>typeof category!=='string'))throw Error('AI 回傳格式不完整，請重試');
- return{blocked:false,subtitle:body.subtitle,cat:body.category||'',color:body.color||'',imageCategories:body.imageCategories,other1:body.tags[0]||'',other2:body.tags[1]||'',other3:body.tags[2]||''}
+ if(!Array.isArray(body?.tags)||body.tags.length>3||!Array.isArray(body.imageCategories)||body.imageCategories.length!==f.photoFiles.length||body.imageCategories.some(category=>typeof category!=='string'))throw Error('AI 回傳格式不完整，請重試');
+ return{blocked:false,cat:body.category||'',color:body.color||'',imageCategories:body.imageCategories,other1:body.tags[0]||'',other2:body.tags[1]||'',other3:body.tags[2]||''}
 },
 async report(f){
- const t=f.tags,photoPaths=[];
+ const t=f.tags,embedding=await this.embed(itemSearchText(f.title,t)),photoPaths=[];
  for(let i=0;i<f.photoFiles.length;i++)photoPaths.push(f.photoPaths[i]||await uploadPhoto(f.photoFiles[i]));
- const values={id:`PN-${crypto.randomUUID().replaceAll('-','').slice(0,12).toUpperCase()}`,name:f.title.trim(),subtitle:t.subtitle||'',category:t.cat||'其他',color:t.color,material:'',features:'',other_feature_1:t.other1.trim(),other_feature_2:t.other2.trim(),other_feature_3:t.other3.trim(),keywords:[f.title,t.subtitle,t.cat,t.color,t.other1,t.other2,t.other3].filter(Boolean).join(' ').slice(0,1000),location:f.area==='other'?f.areaOther.trim():f.area,found_at:ymd(new Date()),pickup_location:f.store==='onsite'?'留在原處':f.storeOther.trim(),contact:f.contact.trim(),photos:photoPaths,status:'pending',created_at:new Date().toISOString()};
- const rows=await supabaseRequest('/rest/v1/lost_items?select=*',{method:'POST',headers:{'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(values)});
+ const values={id:`PN-${crypto.randomUUID().replaceAll('-','').slice(0,12).toUpperCase()}`,name:f.title.trim(),category:t.cat||'其他',color:t.color,material:'',features:'',other_feature_1:t.other1.trim(),other_feature_2:t.other2.trim(),other_feature_3:t.other3.trim(),keywords:[f.title,t.cat,t.color,t.other1,t.other2,t.other3].filter(Boolean).join(' ').slice(0,1000),embedding,location:f.area==='other'?f.areaOther.trim():f.area,found_at:ymd(new Date()),pickup_location:f.store==='onsite'?'留在原處':f.storeOther.trim(),contact:f.contact.trim(),photos:photoPaths,status:'pending',created_at:new Date().toISOString()};
+ const rows=await supabaseRequest('/rest/v1/lost_items?select=id,name,category,color,features,other_feature_1,other_feature_2,other_feature_3,keywords,location,found_at,pickup_location,contact,photos,status',{method:'POST',headers:{'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(values)});
  if(!rows?.length)throw Error('通報已送出，但 Supabase 未回傳新增資料');
  return apiItem(rows[0])
+},
+async embed(text){
+ ensureConfigured();
+ const response=await fetch(`${SUPABASE_URL}/functions/v1/embed-text`,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({text})});
+ const body=await response.json().catch(()=>null);
+ if(!response.ok)throw Error(body?.error||`文字向量產生失敗（${response.status}）`);
+ if(!Array.isArray(body?.embedding)||body.embedding.length!==1536||body.embedding.some(value=>typeof value!=='number'||!Number.isFinite(value)))throw Error('文字向量格式錯誤，請稍後再試');
+ return body.embedding
 },
 async claim(id){
  const result=await supabaseRequest('/rest/v1/rpc/claim_lost_item',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({p_item_id:id})});
@@ -134,19 +152,16 @@ async claim(id){
  return true
 },
 async search(q){
- if(q.desc.trim().length<1)throw Error('請輸入至少 1 個字的物品描述才能搜尋；單獨上傳照片無法搜尋');
- const rows=await supabaseRequest('/rest/v1/lost_items?select=*&status=eq.pending&order=found_at.desc');
- return rows.filter(item=>(!q.loc||item.location.includes(q.loc)||q.loc.includes(item.location))&&(!q.from||item.found_at>=q.from)).map(item=>{
-  const compact=item.keywords.replace(/\s/g,''),itemGrams=grams(compact),matches=itemGrams.filter(gram=>q.desc.includes(gram)).length;
-  const textScore=q.desc.trim()?0.35*(q.desc.includes(item.category)?1:0)+0.65*(itemGrams.length?matches/itemGrams.length:0):null;
-  const imageScore=q.img?0.5:null,score=textScore!==null&&imageScore!==null?(textScore+imageScore)/2:(imageScore!==null?imageScore:(textScore||0));
-  return{...apiItem(item),pct:Math.min(99,Math.round(score*100))}
- }).filter(item=>item.pct>=25).sort((a,b)=>b.pct-a.pct)
+ if(q.desc.trim().length<1)throw Error('請輸入至少 1 個字的物品描述');
+ const searchText=q.desc.trim(),queryEmbedding=await this.embed(searchText);
+ const rows=await supabaseRequest('/rest/v1/rpc/match_lost_items',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query_embedding:queryEmbedding,search_text:searchText,search_location:q.loc||null,search_from:q.from||null,max_results:50})});
+ return rows.map(row=>({...apiItem(row.item),similarity:row.similarity,exactTitle:row.exact_title,literalMatch:row.literal_match}))
 }
 };
+const itemSearchText=(title,tags)=>[`標題：${title.trim()}`,tags.cat&&`類別：${tags.cat}`,tags.color&&`顏色：${tags.color}`,tags.other1&&`特徵：${tags.other1.trim()}`,tags.other2&&`特徵：${tags.other2.trim()}`,tags.other3&&`特徵：${tags.other3.trim()}`].filter(Boolean).join('\n').trim();
 
 /* ===== 狀態 ===== */
-const fresh=()=>({found:{title:'',photos:[],photoFiles:[],photoPaths:[],area:'總圖書館',areaOther:'',store:'onsite',storeOther:'',contact:'',tags:{subtitle:'',cat:'',color:'',other1:'',other2:'',other3:''}},lost:{desc:'',photo:null,photoFile:null,area:'',areaOther:'',from:''},adv:false,res:null,pick:null,last:null,from:'',flt:[],claimed:null,confirm:false,categoryWarning:null,err:''});
+const fresh=()=>({found:{title:'',photos:[],photoFiles:[],photoPaths:[],area:'總圖書館',areaOther:'',store:'onsite',storeOther:'',contact:'',tags:{cat:'',color:'',other1:'',other2:'',other3:''}},lost:{desc:'',area:'',areaOther:'',from:''},adv:false,res:null,pick:null,last:null,from:'',flt:[],claimed:null,confirm:false,categoryWarning:null,showLowScoreResults:false,err:''});
 let S=fresh(),cur='';
 const set=(p,v)=>{const k=p.split('.'),l=k.pop();k.reduce((o,x)=>o[x],S)[l]=v};
 
@@ -160,29 +175,30 @@ const qr=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;const N=21,rn
  for(let y=0;y<N;y++)for(let x=0;x<N;x++){if((x<8&&y<8)||(x>12&&y<8)||(x<8&&y>12))continue;if(rnd()>.5)r+=`<rect x="${x}" y="${y}" width="1" height="1"/>`}
  for(const[x,y]of[[0,0],[14,0],[0,14]])r+=`<rect x="${x}" y="${y}" width="7" height="7"/><rect x="${x+1}" y="${y+1}" width="5" height="5" fill="#fff"/><rect x="${x+2}" y="${y+2}" width="3" height="3"/>`;
  return`<svg width="140" height="140" viewBox="-1 -1 23 23" fill="#241b16" role="img" aria-label="領取憑證 QR Code 示意圖" style="background:#fff;border-radius:8px;display:block;margin:0 auto">${r}</svg>`};
-const busy=m=>{let d=$('.busy');if(!m){d&&d.remove();return}d=document.createElement('div');d.className='busy';d.setAttribute('role','status');d.innerHTML=`<div><svg class="sp" width="44" height="44"><use href="#sq"/></svg><p style="margin:8px 0 0">${m}</p></div>`;document.body.append(d)};
+const busy=m=>{let d=$('.busy');if(!m){d&&d.remove();return}d=document.createElement('div');d.className='busy';d.setAttribute('role','status');d.innerHTML=`<div><span class="sp">${mascot(44)}</span><p style="margin:8px 0 0">${m}</p></div>`;document.body.append(d)};
 const categoryWarningDialog=({categories})=>`<div class="dlg"><div class="dbox" role="dialog" aria-modal="true" aria-labelledby="category-warning-title"><div style="display:flex;align-items:flex-start;gap:12px"><div style="flex:1"><b id="category-warning-title">照片辨識類別不同</b><p class="p" style="margin-top:8px">各張照片辨識出的類別不同，建議重新檢視照片後再上傳。</p><ul style="margin:10px 0 0;padding-left:22px">${categories.map((category,index)=>`<li>第 ${index+1} 張：${esc(category)}</li>`).join('')}</ul></div><button class="bk" data-act="closeCategoryWarning" aria-label="關閉提醒">${ic('x',16)}</button></div><button class="btn" data-act="continueCategoryWarning">確定並繼續</button></div></div>`;
 /* ===== 畫面 ===== */
 /* 首頁清單使用 API 載入的待認領物品快取 */
 const pending=()=>{const L=[...DB].sort((a,b)=>b.date.localeCompare(a.date));return`<div style="display:flex;flex-direction:column;gap:12px"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2 style="font-size:16px">尚未領取的遺失物</h2><span class="sub">共 ${L.length} 件</span></div>${L.length?L.map(x=>`<button class="res" data-act="view" data-id="${x.id}" aria-label="查看${esc(x.name)}"><span class="th">${x.photo?`<img src="${x.photo}" alt="">`:ic('cone',26,'#fff',1.8)}</span><span style="flex:1"><b style="font-size:14.5px;display:block">${esc(x.name)}</b><span class="sub" style="display:block;margin-top:3px">拾獲於 ${esc(x.loc)}</span><span class="sub" style="display:block;margin-top:2px">${fmt(x.date)}．${rel(x.date)}</span></span></button>`).join(''):`<div class="card ctr sub" style="padding:28px 16px">目前沒有等待領取的遺失物</div>`}</div>`};
 
 const home=()=>`<div class="hero"><div style="width:76px;height:76px;border-radius:50%;background:rgba(45,90,39,.12);display:grid;place-items:center">${mascot(54)}</div><div><h1>松果在哪裡</h1><span style="font-size:13.5px">中央大學智慧失物招領平台</span></div></div>
-<div class="bd" style="gap:20px;flex:none"><div class="err" role="alert">公開匿名展示版：請勿提交真實姓名、聯絡方式或證件照片；所有訪客都能查看通報內容並領取物品。</div><button class="big a" data-go="found-1"><span class="ic">${ic('cone',26,'#fff',1.6)}</span><span style="flex:1"><b>我撿到了一個遺失物</b><small>通報拾獲物品，幫同學找回失物</small></span>${ic('next',20,'#fff')}</button>${sbox()}${pending()}</div>`;
+<div class="bd" style="gap:20px;flex:none"><button class="big a" data-go="found-1"><span class="ic">${ic('cone',26,'#fff',1.6)}</span><span style="flex:1"><b>我撿到了一個遺失物</b><small>通報拾獲物品，幫同學找回失物</small></span>${ic('next',20,'#fff')}</button>${sbox()}${pending()}</div>`;
 
-const found1=()=>{const f=S.found;return hd('通報拾獲物品','home',1)+`<div class="bd"><p class="p">上傳物品照片後，AI 將依照片及標題提供特徵建議；請避免上傳包含個人資料的照片。</p>
+const found1=()=>{const f=S.found;return hd('通報拾獲物品','home',1)+`<div class="bd"><p class="p">上傳物品照片後，AI 將依照片及標題提供特徵建議</p>
 <div><label class="lb" for="ft">物品標題</label><input id="ft" class="in" data-bind="found.title" value="${esc(f.title)}" placeholder="簡短描述這項物品，如：藍色不鏽鋼水壺"></div>
 <div><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px"><span class="lb" style="margin:0">上傳物品照片</span><span class="sub">已上傳 <b style="color:var(--pine)">${f.photos.length}</b> / 3</span></div>
 <div class="photos">${[0,1,2].map(i=>f.photos[i]?`<div class="ph"><img src="${f.photos[i]}" alt="已上傳的物品照片"><button class="x" data-act="rm" data-i="${i}" aria-label="移除這張照片">${ic('x',13,'var(--cdark)',2.6)}</button></div>`:`<div class="ph"><label>${ic('plus',28,'var(--pine)',2.2)}<input type="file" accept="image/jpeg,image/png,image/webp" hidden data-file="found" aria-label="新增照片"></label></div>`).join('')}</div>
-<div style="display:flex;gap:6px;margin-top:14px;align-items:center;color:var(--cdark)">${ic('shield',14)}<span class="sub" style="font-size:11px;color:var(--cdark)">Demo 未啟用真人驗證；AI 呼叫不限制使用者，請勿公開網站或提供不含個資的測試照片。公開展示模式下，照片和聯絡方式可被任何人查看。</span></div></div>
+<div style="display:flex;gap:6px;margin-top:14px;align-items:center;color:var(--cdark)">${ic('shield',14)}<span class="sub" style="font-size:11px;color:var(--cdark)">若上傳含有個人資料的相關證件時，請進行適當的處理。</span></div></div>
 <div><span class="lb">拾獲地點</span>${sel('fa','found.area',f.area)}${f.area==='other'?`<input class="in" style="margin-top:10px" data-bind="found.areaOther" value="${esc(f.areaOther)}" placeholder="請輸入拾獲地點，如：某棟大樓或場地名稱" aria-label="自填拾獲地點">`:''}</div>
 <div><span class="lb">失主該去哪裡領取</span><div style="display:flex;flex-direction:column;gap:12px">${[['onsite','留在原處','物品留在拾獲地點附近顯眼處，方便失主原地尋獲'],['other','其他（自填）','自行填寫保管地點']].map(([id,t,s])=>`<button class="opt${f.store===id?' on':''}" data-act="store" data-v="${id}"><span class="ico">${ic('pin',20)}</span><span style="flex:1"><b style="font-size:14.5px;display:block;${f.store===id?'color:var(--pine)':''}">${t}</b><span class="sub" style="display:block;margin-top:3px;line-height:1.5">${s}</span></span>${f.store===id?ic('ok',20,'var(--pine)',2.4):''}</button>`).join('')}${f.store==='other'?`<input class="in" data-bind="found.storeOther" value="${esc(f.storeOther)}" placeholder="請輸入保管地點，如：系辦、警衛室" aria-label="自填保管地點">`:''}</div></div>
 <div><label class="lb" for="fc">留下你的聯絡方式（選填）</label><input id="fc" class="in" data-bind="found.contact" value="${esc(f.contact)}" placeholder="展示版請勿輸入真實手機或個人帳號"></div>${err()}</div>`+ft(`<button class="btn" data-act="toStep2">下一步：AI 特徵分析 ${ic('next')}</button>`)};
 
-const found2=()=>{const f=S.found,t=f.tags,sens=['證件','卡片'].includes(t.cat);return hd('AI 特徵確認','found-1',2)+`<div class="bd"><p class="p">Azure Vision 先擷取圖片特徵，再由 Azure OpenAI 結合標題生成副標題與外觀標籤。結果可能不準確，請確認並自行修改。</p>
+const found2=()=>{const f=S.found,t=f.tags,sens=['證件','卡片'].includes(t.cat);return hd('AI 特徵確認','found-1',2)+`<div class="bd"><p class="p">Azure Vision 先擷取圖片特徵，再由 Azure OpenAI 結合標題提供類別、顏色及其他特徵建議。結果可能不準確，請確認並自行修改。</p>
 <div class="card" style="box-shadow:0 10px 24px rgba(92,64,51,.08)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">${mascot(28)}<b style="font-size:13px">標籤建議可自行確認與修改</b></div>
-<div style="display:flex;gap:8px;margin-bottom:12px">${f.photos.map(u=>`<div class="mk${sens?' m':''}"><img src="${u}" alt="拾獲物品照片"></div>`).join('')}</div>
+<div class="edit-photos" style="margin-bottom:14px">${f.photos.map((u,i)=>`<div class="edit-photo${sens?' m':''}"><img src="${u}" alt="拾獲物品照片 ${i+1}"></div>`).join('')}</div>
 <div class="sub" style="margin-bottom:12px">點擊欄位右側的鉛筆圖示即可編輯</div>
-<div style="display:flex;flex-direction:column;gap:8px">${[['subtitle','副標題',t.subtitle,'請補充'],['cat','類別',t.cat,'請補充'],['color','顏色',t.color,'請補充'],['other1','其他特徵1（選填）',t.other1,'例如姓名貼、特殊標籤或吊飾；沒有可留空'],['other2','其他特徵2（選填）',t.other2,'例如姓名貼、特殊標籤或吊飾；沒有可留空'],['other3','其他特徵3（選填）',t.other3,'例如姓名貼、特殊標籤或吊飾；沒有可留空']].map(([k,l,value,placeholder])=>`<div class="tag"><label for="t${k}">${l}：</label><input id="t${k}" data-bind="found.tags.${k}" value="${esc(value)}" placeholder="${placeholder}" aria-label="${l}" readonly${k.startsWith('other')?' maxlength="500"':''}><button type="button" class="tag-edit" data-act="editFeature" data-id="t${k}" data-label="${l}" aria-label="編輯${l}">${ic('edit',14)}</button></div>`).join('')}</div></div>
+<div class="feature-rows">${[['cat','類別',t.cat],['color','顏色',t.color]].map(([k,l,value])=>`<div class="feature-row"><label for="t${k}">${l}</label><div class="feature-pill"><div class="feature-control"><span class="feature-hash">#</span><input id="t${k}" data-bind="found.tags.${k}" value="${esc(value)}" size="${Math.max(1,[...value].length)}" placeholder="請補充" aria-label="${l}" readonly><button type="button" class="tag-edit" data-act="editFeature" data-id="t${k}" data-label="${l}" aria-label="編輯${l}">${ic('edit',14)}</button></div></div></div>`).join('')}</div>
+<div class="feature-row other-features"><label>其他</label><div class="feature-tags">${[['other1','其他特徵 1',t.other1],['other2','其他特徵 2',t.other2],['other3','其他特徵 3',t.other3]].map(([k,l,value])=>`<div class="feature-pill"><div class="feature-control"><span class="feature-hash">#</span><input id="t${k}" data-bind="found.tags.${k}" value="${esc(value)}" size="${Math.max(1,[...value].length)}" placeholder="${value?'':'選填'}" aria-label="${l}（選填）" readonly maxlength="500"><button type="button" class="tag-edit" data-act="editFeature" data-id="t${k}" data-label="${l}" aria-label="編輯${l}">${ic('edit',14)}</button></div></div>`).join('')}</div></div></div>
 ${sens?`<div class="card" style="display:flex;gap:10px;align-items:flex-start;color:var(--cdark)">${ic('shield',18)}<span style="font-size:12.5px;color:var(--cdark)">證件／卡片照片不會自動遮蔽。公開展示模式請勿上傳真實個資。</span></div>`:''}
 ${err()}</div>`+ft(`<button class="btn" data-act="report">確認送出 ${ic('next')}</button>`)};
 
@@ -191,21 +207,21 @@ const foundDone=()=>{const it=S.last;return`<div class="bd ctr" style="padding-t
 
 const safetyWarning=()=>`<div class="bd ctr" style="justify-content:center;padding-top:48px"><div class="err" role="alert" style="max-width:360px;font-size:14px;line-height:1.7">圖片辨識結果可能包含不適合上傳的內容，本次通報已停止；照片未上傳至公開物品資料庫。</div></div>`+ft(`<button class="btn" data-go="home">返回首頁</button>`);
 
-const sbox=()=>{const l=S.lost,fa=flt(l),today=ymd(new Date());return`<div style="display:flex;flex-direction:column;gap:20px"><div class="sbar"><label class="plus" aria-label="選填上傳參考照片">${ic('plus',22)}<input type="file" accept="image/*" hidden data-file="lost"></label>${l.photo?`<span class="pv"><img src="${l.photo}" alt="已上傳的參考照片"><button data-act="rmLost" aria-label="移除照片">${ic('x',11,'#fff',3)}</button></span>`:''}<input id="ld" class="sin" data-bind="lost.desc" value="${esc(l.desc)}" placeholder="請輸入至少 1 個字的物品描述" aria-label="描述你弄丟的物品" enterkeyhint="search"><button class="sgo" data-act="search" aria-label="開始尋找我的松果">${ic('search',20,'#fff')}</button><button class="sflt" data-act="adv" aria-label="進階檢索${fa?'（已設定條件）':''}" aria-expanded="${S.adv}">${ic('filter',20,'var(--pine)')}${fa?'<span style="position:absolute;top:7px;right:7px;width:9px;height:9px;border-radius:50%;background:var(--gold);border:1.5px solid var(--card)"></span>':''}</button></div>
+const sbox=()=>{const l=S.lost,fa=flt(l),today=ymd(new Date());return`<div style="display:flex;flex-direction:column;gap:20px"><div class="sbar"><input id="ld" class="sin" data-bind="lost.desc" value="${esc(l.desc)}" placeholder="請輸入至少 1 個字的物品描述" aria-label="描述你弄丟的物品" enterkeyhint="search"><button class="sgo" data-act="search" aria-label="開始尋找我的松果">${ic('search',20,'#fff')}</button><button class="sflt" data-act="adv" aria-label="進階檢索${fa?'（已設定條件）':''}" aria-expanded="${S.adv}">${ic('filter',20,'var(--pine)')}${fa?'<span style="position:absolute;top:7px;right:7px;width:9px;height:9px;border-radius:50%;background:var(--gold);border:1.5px solid var(--card)"></span>':''}</button></div>
 ${S.adv?`<div class="card" style="display:flex;flex-direction:column;gap:18px"><div><label class="lb" for="la">遺失地點</label>${sel('la','lost.area',l.area,1)}${l.area==='other'?`<input class="in" style="margin-top:10px" data-bind="lost.areaOther" value="${esc(l.areaOther)}" placeholder="請輸入遺失地點，如：某棟大樓或場地名稱" aria-label="自填遺失地點">`:''}</div>
 <div><label class="lb" for="ld1">遺失日期</label><input id="ld1" type="date" class="in" style="width:100%;flex:none" data-bind="lost.from" value="${l.from}" max="${today}" aria-label="開始日期，範圍到今天"><div class="sub" style="margin-top:6px">點選日曆挑選起始日期，搜尋範圍會到今天為止</div></div>
 ${fa?`<button class="btn g" data-act="clrFlt" style="padding:11px;font-size:13.5px">清除條件</button>`:''}</div>`:''}${err()}</div>`};
 
-const lost2=()=>hd('相似度排行','home')+`<div class="bd" style="gap:14px"><p class="p" style="font-size:12.5px">搜尋必須輸入文字描述；參考照片僅提供示意分數，沒有進行影像辨識或以圖搜圖。</p>${S.flt&&S.flt.length?`<p class="sub" style="margin:0">已套用條件：${S.flt.map(esc).join('．')}</p>`:''}${S.res.length?S.res.map((x,n)=>`<button class="res${n?'':' top'}" data-act="pick" data-id="${x.id}" aria-label="查看${esc(x.name)}，相似度 ${x.pct}%">${n?'':'<span class="badge">最佳配對</span>'}<span class="th">${x.photo?`<img src="${x.photo}" alt="">`:ic('cone',26,'#fff',1.8)}</span><span style="flex:1"><b style="font-size:14.5px;display:block">${esc(x.name)}</b><span class="sub" style="display:block;margin-top:3px">拾獲於 ${esc(x.loc)}．${rel(x.date)}</span><span style="display:flex;align-items:center;gap:4px;margin-top:8px;font-size:13px;font-weight:700;color:${n?'var(--brown)':'var(--sub)'}">${n?ic('cone',14,'var(--gold)'):''}${x.pct}% 相似度</span></span></button>`).join(''):`<div class="card ctr sub" style="padding:28px 16px">阿果還沒找到相似的松果。回上一步調整描述，或放寬進階檢索的條件，再試一次。</div>`}<p class="sub" style="text-align:center;margin:0">沒有看到你的物品？試著提供更多線索</p></div>`;
+const lost2=()=>{const results=S.res||[],low=results.filter(x=>x.similarity!=null&&x.similarity<0.25),high=results.filter(x=>x.similarity==null||x.similarity>=0.25),shown=S.showLowScoreResults?[...high,...low]:high,allShown=S.showLowScoreResults||low.length===0;return hd('搜尋結果','home')+`<div class="bd" style="gap:14px">${S.flt&&S.flt.length?`<p class="sub" style="margin:0">已套用條件：${S.flt.map(esc).join('．')}</p>`:''}${shown.length?shown.map(x=>`<button class="res" data-act="pick" data-id="${x.id}" aria-label="查看${esc(x.name)}"><span class="th">${x.photo?`<img src="${x.photo}" alt="">`:ic('cone',26,'#fff',1.8)}</span><span style="flex:1"><b style="font-size:14.5px;display:block">${esc(x.name)}</b><span class="sub" style="display:block;margin-top:3px">拾獲於 ${esc(x.loc)}</span><span class="sub" style="display:block;margin-top:2px">${fmt(x.date)}・${rel(x.date)}</span></span></button>`).join(''):low.length?`<div class="card ctr sub" style="padding:20px 16px">目前沒有符合條件的結果。</div>`: `<div class="card ctr sub" style="padding:28px 16px">阿果還沒找到相似的松果。請嘗試其他描述或放寬進階檢索條件。</div>`}${low.length&&!S.showLowScoreResults?`<button class="btn g" data-act="showOtherResults">顯示其他結果（${low.length}）</button>`:''}${allShown?`<p class="sub" style="text-align:center;margin:0">沒有看到你的物品？再多找找看吧</p>`:''}<div style="display:flex;justify-content:flex-end"><button class="to-top" type="button" data-act="scrollToTop" aria-label="回到搜尋結果頂端">${ic('arrowTop',20,'currentColor',2.4)}</button></div></div>`};
 
 const item=()=>{const it=S.pick,sens=['證件','卡片'].includes(it.cat),ph=it.photos||[],when=fmt(it.date)+'（'+rel(it.date)+'）',
- tg=[['類別',it.cat],['顏色',it.color],['其他特徵1',it.other1],['其他特徵2',it.other2],['其他特徵3',it.other3]].filter(([,v])=>v),
+ tg=[it.cat,it.color,it.other1,it.other2,it.other3].filter(Boolean),
  st=it.store==='留在原處'?'留在原處（'+it.loc+' 附近）':it.store;
  return hd('物品詳情',S.from==='home'?'home':'lost-2')+`<div class="bd" style="gap:18px">
 <div class="gal" aria-label="物品照片，可左右滑動">${ph.length?ph.map((u,i)=>`<div class="sl${sens?' m':''}"><img src="${u}" alt="${esc(it.name)}照片 ${i+1}"></div>`).join(''):`<div class="sl" role="img" aria-label="尚無照片">${ic('cone',56,'#fff',1.6)}</div>`}</div>
 ${ph.length>1?`<div class="sub" style="text-align:center;margin-top:-8px">左右滑動查看全部 ${ph.length} 張照片</div>`:''}
-<div><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px"><h2 style="font-size:20px;line-height:1.4">${esc(it.name)}</h2><span class="st">待認領</span></div>${it.subtitle?`<div class="sub" style="margin-top:4px">${esc(it.subtitle)}</div>`:''}${it.pct!=null?`<div class="sub" style="margin-top:4px">${it.pct}% 相似度</div>`:''}</div>
-${tg.length?`<div><span class="lb">物品特徵</span><div class="tgs">${tg.map(([k,v])=>`<span class="tg2"><small>${k}</small>${esc(v)}</span>`).join('')}</div></div>`:''}
+<div><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px"><h2 style="font-size:20px;line-height:1.4">${esc(it.name)}</h2><span class="st">待認領</span></div>${it.pct!=null?`<div class="sub" style="margin-top:4px">${it.pct}% 相似度</div>`:''}</div>
+${tg.length?`<div><span class="lb">物品特徵</span><div class="tgs">${tg.map(value=>`<span class="tg2">#${esc(value)}</span>`).join('')}</div></div>`:''}
 <div class="card" style="display:flex;flex-direction:column;gap:12px">${row('拾獲地點',it.loc)}${row('拾獲時間',when)}${row('領取地點',st)}${row('拾獲者聯絡方式',it.contact||'未提供')}</div>
 ${sens?`<div class="card" style="display:flex;gap:10px;align-items:flex-start;color:var(--cdark)">${ic('shield',18)}<span style="font-size:12.5px;color:var(--cdark)">證件／卡片照片不會自動遮蔽。公開展示模式請勿上傳真實個資。</span></div>`:''}</div>${S.confirm?`<div class="dlg"><div class="dbox" role="dialog" aria-modal="true" aria-labelledby="dt"><h2 id="dt" style="font-size:17px;line-height:1.6">請確認遺失物為本人之物品並確實領取後再點擊</h2><p class="p">是否已確認並領取「${esc(it.name)}」？</p><div class="dbtn"><button class="btn g" data-act="cancelClaim" data-autofocus>否</button><button class="btn" data-act="doClaim">是</button></div></div></div>`:''}`+ft(`<button class="btn" data-act="claim">領取遺失物</button><button class="btn g" data-go="home">回到首頁</button>`)};
 
@@ -220,10 +236,10 @@ function render(){let k=location.hash.slice(1)||'home';if(!R[k]||(need[k]&&!need
 const re=()=>{const y=scrollY;render();scrollTo(0,y)},fail=m=>{S.err=m;re()},go=h=>{location.hash=h};
 addEventListener('hashchange',render);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.confirm){S.confirm=false;re()}if(e.key==='Escape'&&S.categoryWarning){S.categoryWarning=null;re()}if(e.key==='Enter'&&e.target.id==='ld')$('[data-act=search]').click()});
-document.addEventListener('input',e=>{const p=e.target.dataset.bind;if(p&&e.target.tagName!=='SELECT')set(p,e.target.value)});
+document.addEventListener('input',e=>{const p=e.target.dataset.bind;if(p&&e.target.tagName!=='SELECT'){set(p,e.target.value);if(e.target.dataset.bind.startsWith('found.tags.'))e.target.size=Math.max(1,[...e.target.value].length)}});
 document.addEventListener('change',e=>{const t=e.target,d=t.dataset;
  if(d.bind&&(t.tagName==='SELECT'||t.type==='date')){set(d.bind,t.value);re()}
- if(d.file&&t.files[0]){const file=t.files[0];if(d.file==='found'&&S.found.photoFiles.length>=3){t.value='';return fail('每筆通報最多上傳 3 張照片')}if(!IMAGE_TYPES[file.type]){t.value='';return fail('照片僅支援 JPEG、PNG 或 WebP 格式')}if(file.size>8*1024*1024){t.value='';return fail('單張照片不可超過 8 MB')}const u=URL.createObjectURL(file);if(d.file==='found'){S.categoryWarning=null;S.found.photos.push(u);S.found.photoFiles.push(file);S.found.photoPaths.push(null)}else{S.lost.photo=u;S.lost.photoFile=file}S.err='';re()}});
+ if(d.file&&t.files[0]){const file=t.files[0];if(d.file==='found'&&S.found.photoFiles.length>=3){t.value='';return fail('每筆通報最多上傳 3 張照片')}if(!IMAGE_TYPES[file.type]){t.value='';return fail('照片僅支援 JPEG、PNG 或 WebP 格式')}if(file.size>8*1024*1024){t.value='';return fail('單張照片不可超過 8 MB')}const u=URL.createObjectURL(file);S.categoryWarning=null;S.found.photos.push(u);S.found.photoFiles.push(file);S.found.photoPaths.push(null);S.err='';re()}});
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-go],[data-act]');if(!b)return;const{go:g,act,i,v,id}=b.dataset,f=S.found,l=S.lost;
  try{
  if(g)return go(g);
@@ -234,7 +250,6 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-go],
  else if(act==='store'){f.store=v;re()}
 
  else if(act==='clrFlt'){l.area='';l.areaOther='';l.from='';re()}
- else if(act==='rmLost'){if(l.photo)URL.revokeObjectURL(l.photo);l.photo=null;l.photoFile=null;re()}
  else if(act==='adv'){S.adv=!S.adv;re()}
  else if(act==='toStep2'){
   if(!f.photos.length)return fail('請至少上傳 1 張物品照片才能繼續');
@@ -247,11 +262,13 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-go],
   const combinedFeature=featureFields.find(([,value])=>/[、,，;；\n]/.test(value));
   if(combinedFeature)return fail(`${combinedFeature[0]}請只填一項特徵`);
   busy('阿果正在藏松果⋯');S.last=await API.report(f);DB.unshift(S.last);busy();go('found-done')}
+ else if(act==='showOtherResults'){S.showLowScoreResults=true;re()}
+ else if(act==='scrollToTop'){window.scrollTo({top:0,behavior:'smooth'})}
  else if(act==='search'){
-  if(l.desc.trim().length<1)return fail('請輸入至少 1 個字的物品描述才能搜尋；單獨上傳照片無法搜尋');
+  if(l.desc.trim().length<1)return fail('請輸入至少 1 個字的物品描述');
   if(l.area==='other'&&!l.areaOther.trim())return fail('請輸入遺失地點');
   const loc=l.area==='other'?l.areaOther.trim():l.area,fl=[];if(loc)fl.push('地點：'+loc);if(l.from)fl.push('日期：'+fmt(l.from)+' ～ 今天');
-  busy('阿果正在翻松葉堆⋯');S.res=await API.search({img:!!l.photo,desc:l.desc,loc,from:l.from});S.flt=fl;busy();go('lost-2')}
+  busy('阿果正在比對物品描述⋯');S.res=await API.search({desc:l.desc,loc,from:l.from});S.flt=fl;S.showLowScoreResults=false;busy();go('lost-2')}
  else if(act==='claim'){S.confirm=true;re()}
  else if(act==='cancelClaim'){S.confirm=false;re()}
  else if(act==='doClaim'){busy('阿果正在登記領取⋯');await API.claim(S.pick.id);DB=DB.filter(x=>x.id!==S.pick.id);busy();S.claimed=S.pick;S.res=S.res&&S.res.filter(x=>x.id!==S.pick.id);S.pick=null;S.confirm=false;go('claim-done')}

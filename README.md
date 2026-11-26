@@ -6,7 +6,7 @@
 Browser → GitHub Pages (frontend/)
         → Supabase REST API (PostgreSQL)
         → Supabase Storage (photos)
-        → Supabase Edge Function → Azure AI Vision → Azure OpenAI
+        → Supabase Edge Functions → Azure AI Vision / Azure OpenAI
 ```
 
 ## 重要：目前是公開匿名展示版
@@ -32,9 +32,52 @@ Browser → GitHub Pages (frontend/)
 
 5. 確認 `frontend/config.js` 與 `frontend/index.html` 一起提交並推送。`supabase/setup.sql` 只需在 Supabase SQL Editor 執行，不會部署到 Pages。
 
+## 文字語意搜尋設定
+
+搜尋會先將使用者描述送至 `embed-text` Edge Function，由 Azure OpenAI Embedding 產生 1536 維向量；通報資料也會以相同模型和相同欄位格式產生向量。Supabase 使用 `pgvector` 搜尋待認領物品，排序依序為標題完全符合、標題／類別／顏色／特徵文字命中、向量語意相似度。搜尋不會使用照片，也不再顯示未校準的相似度百分比。
+
+既有 Supabase 專案請依序在 SQL Editor 執行 [`supabase/migrations/20261123_add_text_embeddings.sql`](supabase/migrations/20261123_add_text_embeddings.sql)、[`supabase/migrations/20261125_remove_subtitle.sql`](supabase/migrations/20261125_remove_subtitle.sql) 與 [`supabase/migrations/20261125_similarity_score_null.sql`](supabase/migrations/20261125_similarity_score_null.sql)；移除副標題的 migration 會將內容拆至空白的其他特徵欄位，若既有欄位空間不足會中止並要求先手動處理，以避免遺失資料。新資料庫則執行 `supabase/setup.sql`。搜尋結果會顯示 cosine similarity 向量分數（小數），僅作排序參考，不代表命中機率；尚未建立向量的舊資料會顯示「尚無向量」。部署 Edge Functions 並設定 secrets：
+
+```bash
+supabase functions deploy embed-text
+supabase functions deploy backfill-embeddings
+supabase secrets set \
+  ALLOWED_ORIGIN="https://YOUR-SITE-DOMAIN" \
+  AZURE_OPENAI_ENDPOINT="https://YOUR-RESOURCE.openai.azure.com/openai/v1" \
+  AZURE_OPENAI_KEY="YOUR-AZURE-KEY" \
+  AZURE_OPENAI_EMBEDDING_DEPLOYMENT="YOUR-DEPLOYMENT-NAME"
+supabase secrets set BACKFILL_SECRET="YOUR-LONG-RANDOM-SECRET"
+```
+
+`AZURE_OPENAI_ENDPOINT` 與 `AZURE_OPENAI_KEY` 是原有 AI 分析和 Embedding 共用的預設值。若 Embedding 使用另一個 Azure OpenAI Resource，請勿用新值覆蓋原有 secrets；改為另外設定 `AZURE_OPENAI_EMBEDDING_ENDPOINT` 和 `AZURE_OPENAI_EMBEDDING_KEY`。Embedding Functions 會優先使用這兩個專用值，未設定時才回退使用原本的共用值。Azure key 屬於 Resource，不是單一模型部署的專用 key；同一 Resource 中新增模型部署通常沿用同一組 endpoint/key，只需設定新的 `AZURE_OPENAI_EMBEDDING_DEPLOYMENT`。
+
+Embedding 使用不同 Azure Resource 時，另外執行以下命令，不會覆蓋原本 AI 分析所用的 endpoint/key：
+
+```bash
+supabase secrets set \
+  AZURE_OPENAI_EMBEDDING_ENDPOINT="https://YOUR-EMBEDDING-RESOURCE.openai.azure.com/openai/v1" \
+  AZURE_OPENAI_EMBEDDING_KEY="YOUR-EMBEDDING-RESOURCE-KEY"
+```
+
+Embedding 部署必須輸出 1536 維向量；建議使用 `text-embedding-3-small`，並確認該模型已在 Azure 專案中部署。若現有 `AZURE_OPENAI_ENDPOINT` 指向 `/openai/v1/responses`，Function 會自動改用同一資源的 `/openai/v1/embeddings`。請勿把 Azure key 或回填密碼放入前端設定或提交到 Git。
+
+部署完成後，舊資料需手動分批回填。每次最多處理 10 筆尚未有向量的待認領物品，重複呼叫直到 `hasMore` 為 `false`：
+
+```bash
+curl -X POST "https://<project-ref>.supabase.co/functions/v1/backfill-embeddings" \
+  -H "apikey: <SUPABASE_PUBLISHABLE_KEY>" \
+  -H "Authorization: Bearer <BACKFILL_SECRET>" \
+  -H "Content-Type: application/json" \
+  -d '{"limit":5}'
+```
+
+回填 Function 使用 Supabase 注入的伺服器端 Secret key（舊專案使用 `SUPABASE_SERVICE_ROLE_KEY`），只接受獨立的 `BACKFILL_SECRET`；請妥善保管該密碼。Embedding Function 目前仍是匿名公開呼叫，Origin 檢查不是防止非瀏覽器濫用的安全控制。此 Demo 上線前仍需加上可靠的驗證／限流與用量上限。
+
+目前回傳最多 50 筆，尚未設定語意相似度最低門檻；請用人工標註的查詢／正確物品案例評估誤配後，再決定門檻與排序策略。更換 Embedding 模型或維度時，必須重新產生所有已儲存向量並同步調整資料庫欄位；資料量變大時再評估建立向量索引。
+
 ## AI 物品特徵
 
-通報時，AI 會分析最多三張照片，提供可編輯的物品描述、類別、顏色及選填特徵。若照片內容觸發安全阻擋，或各張照片辨識出的類別不同，頁面會提示使用者；照片在確認通報前不會上傳至公開 Storage。AI 判斷可能誤判或漏判，請使用者確認辨識結果。照片會交由外部 AI 服務處理，請勿上傳含個人資料的照片。
+通報時，AI 會分析最多三張照片，提供可編輯的類別、顏色及其他特徵。若照片內容觸發安全阻擋，或各張照片辨識出的類別不同，頁面會提示使用者；照片在確認通報前不會上傳至公開 Storage。AI 判斷可能誤判或漏判，請使用者確認辨識結果。照片會交由外部 AI 服務處理，請勿上傳含個人資料的照片。
 
 既有資料庫若尚未拆分其他特徵欄位，請依序在 Supabase SQL Editor 執行 [`supabase/migrations/20261119_split_item_features.sql`](supabase/migrations/20261119_split_item_features.sql) 與 [`supabase/migrations/20261119_enforce_three_single_features.sql`](supabase/migrations/20261119_enforce_three_single_features.sql)；新資料庫請使用 [`supabase/setup.sql`](supabase/setup.sql)。
 
@@ -63,6 +106,6 @@ GitHub Pages 免費使用資格依 repository visibility 和 GitHub 方案而異
 
 - 清單、搜尋、建立通報和領取都由瀏覽器直接呼叫 Supabase REST/Storage API。
 - 照片只接受 JPEG、PNG、WebP；每張上限 8 MiB，每筆最多 3 張。Storage bucket 是公開的。
-- 通報標籤使用 Azure AI Vision + Azure OpenAI 產生；失主搜尋必須輸入至少 1 個字的文字描述。文字分數由瀏覽器端 2-gram 計算；可附參考照片，但目前僅加入固定示意分數，不會進行以圖搜圖。
+- 通報標籤使用 Azure AI Vision + Azure OpenAI 產生；失主搜尋必須輸入文字描述，透過 Azure OpenAI Embedding 與 Supabase `pgvector` 進行文字語意搜尋，並優先顯示完全符合的標題。不支援圖片檢索。
 - 領取透過 `claim_lost_item` RPC 原子更新狀態，避免同一筆資料重複領取，但匿名使用者仍可領取任何物品。
 - 沒有校園登入、角色權限、通報者身分驗證、濫用防護或管理介面。
