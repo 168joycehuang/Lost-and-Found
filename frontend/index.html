@@ -53,7 +53,9 @@ textarea.in{line-height:1.6;resize:none}select.in{appearance:none;-webkit-appear
 .ok{width:88px;height:88px;border-radius:50%;background:var(--gold);display:grid;place-items:center;box-shadow:0 14px 28px rgba(229,169,59,.35);color:#3A2E26}
 .row{display:flex;justify-content:space-between;gap:12px;font-size:12.5px}.row b{font-weight:600;text-align:right}
 .ctr{text-align:center;align-items:center}
-.hero{display:flex;align-items:center;justify-content:center;gap:16px;padding:20px 24px 22px}.hero h1{font-size:26px;color:var(--pine);letter-spacing:2px}
+.hero{position:relative;display:flex;align-items:center;justify-content:center;gap:16px;padding:20px 56px 22px}.hero h1{font-size:26px;color:var(--pine);letter-spacing:2px}
+.profile-btn{position:absolute;top:18px;right:16px;width:40px;height:40px;border-radius:14px;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;color:var(--pine)}
+.owned-card{display:flex;flex-direction:column;gap:12px}.owned-photos{display:flex;gap:8px;overflow-x:auto}.owned-photos img{width:72px;height:72px;flex:none;object-fit:cover;border-radius:12px;background:var(--chip)}
 .big{display:flex;align-items:center;gap:14px;border-radius:20px;padding:18px;width:100%}.big.a{background:#2D5A27;color:#fff;box-shadow:0 12px 22px rgba(45,90,39,.28)}.big.b{background:var(--card);border:1.5px solid var(--brown)}
 .big .ic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;flex:none}.big.a .ic{background:rgba(255,255,255,.18)}.big.b .ic{background:var(--chip);color:var(--brown)}.big b{display:block;font-size:16px}.big small{font-size:12px;opacity:.85}
 .sbar{display:flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--line);border-radius:28px;padding:10px 10px 10px 14px;box-shadow:0 8px 22px rgba(92,64,51,.08)}.sbar:focus-within{border-color:var(--pine)}
@@ -79,7 +81,7 @@ input[type=date].in{flex:1;min-width:0;min-height:46px;-webkit-appearance:none;a
 <script src="./config.js"></script>
 <script>
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const P={filter:'M4 7h16M7 12h10M10 17h4',back:'M15 18l-6-6 6-6',next:'M9 6l6 6-6 6',chev:'M6 9l6 6 6-6',edit:'M4 20l4-1 11-11-3-3L5 16z',plus:'M12 5v14M5 12h14',x:'M18 6 6 18M6 6l12 12',shield:'M12 2l7 3v6c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V5z',search:'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-4.3-4.3',cam:'M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM12 9.5a3.5 3.5 0 1 0 0 7',txt:'M4 6h16M4 12h16M4 18h10',up:'M7 18a4 4 0 0 1-1-7.9A5 5 0 0 1 16 8a4 4 0 0 1 1 7.9M12 12v7M9 15l3-3 3 3',arrowTop:'M12 19V5M5 12l7-7 7 7',ok:'M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19zM8 12.5l2.5 2.5L16 9.5',cone:'M9.2 10C9.2 7 10.4 5 12 5s2.8 2 2.8 5M7.6 10h8.8c.6 2.2-1 9.4-4.4 11.3C8.6 19.4 7 12.2 7.6 10z',warn:'M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19zM12 8v5M12 16v.01',pin:'M12 21s7-7.4 7-12a7 7 0 1 0-14 0c0 4.6 7 12 7 12zM12 6.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5'};
+const P={filter:'M4 7h16M7 12h10M10 17h4',back:'M15 18l-6-6 6-6',next:'M9 6l6 6-6 6',chev:'M6 9l6 6 6-6',edit:'M4 20l4-1 11-11-3-3L5 16z',plus:'M12 5v14M5 12h14',x:'M18 6 6 18M6 6l12 12',shield:'M12 2l7 3v6c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V5z',search:'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-4.3-4.3',cam:'M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM12 9.5a3.5 3.5 0 1 0 0 7',txt:'M4 6h16M4 12h16M4 18h10',up:'M7 18a4 4 0 0 1-1-7.9A5 5 0 0 1 16 8a4 4 0 0 1 1 7.9M12 12v7M9 15l3-3 3 3',arrowTop:'M12 19V5M5 12l7-7 7 7',ok:'M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19zM8 12.5l2.5 2.5L16 9.5',cone:'M9.2 10C9.2 7 10.4 5 12 5s2.8 2 2.8 5M7.6 10h8.8c.6 2.2-1 9.4-4.4 11.3C8.6 19.4 7 12.2 7.6 10z',warn:'M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19zM12 8v5M12 16v.01',pin:'M12 21s7-7.4 7-12a7 7 0 1 0-14 0c0 4.6 7 12 7 12zM12 6.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5',user:'M20 21a8 8 0 0 0-16 0M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8'};
 const ic=(k,s=18,c='currentColor',w=2)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${P[k]}"/></svg>`;
 const mascot=s=>{const path=String(window.PINEFINDER_CONFIG?.mascotImage||'./assets/pinecone-mascot.png');return`<span class="mascot-wrap" style="width:${s}px;height:${s}px"><img class="mascot-photo" src="${esc(path)}" alt="松鼠吉祥物" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><span class="mascot-fallback" aria-hidden="true"><svg width="${s}" height="${s}"><use href="#sq"/></svg></span></span>`};
 const Z={工程與資訊區:['工一館','工二館','工三館','資電大樓'],文理法商區:['綜合教學大樓','文學一館','文學二館','客家學院','管理學院二館'],生活運動區:['松苑','依仁堂','羽球館','宵夜街'],公共空間:['總圖書館','大講堂','中大湖']};
@@ -108,6 +110,11 @@ const supabaseRequest=async(path,{headers={},...options}={})=>{
 };
 const publicPhotoUrl=path=>/^https?:\/\//i.test(path)?path:`${SUPABASE_URL}/storage/v1/object/public/${encodeURIComponent(STORAGE_BUCKET)}/${path.split('/').map(encodeURIComponent).join('/')}`;
 const apiItem=row=>{const photos=(row.photos||[]).map(publicPhotoUrl),legacyFeatures=(row.features||'').split(/[、,，;；\n]+/).map(value=>value.trim()).filter(Boolean),hasSplitFeatures=Object.hasOwn(row,'other_feature_1');return{id:row.id,name:row.name,cat:row.category,color:row.color,other1:hasSplitFeatures?row.other_feature_1||'':legacyFeatures[0]||'',other2:hasSplitFeatures?row.other_feature_2||'':legacyFeatures[1]||'',other3:hasSplitFeatures?row.other_feature_3||'':legacyFeatures.slice(2).join('、'),kw:row.keywords,loc:row.location,date:row.found_at,store:row.pickup_location,contact:row.contact,photos,photo:photos[0]||null,status:row.status}};
+const OWNED_UPLOADS_KEY='pinefinder.ownedUploads.v1';
+const readOwnedUploads=()=>{const raw=localStorage.getItem(OWNED_UPLOADS_KEY);if(!raw)return[];const records=JSON.parse(raw);if(!Array.isArray(records)||records.some(record=>!record||typeof record.id!=='string'||typeof record.token!=='string'))throw Error('本機上傳紀錄格式錯誤，無法載入「我的上傳」');return records};
+const saveOwnedUploads=records=>localStorage.setItem(OWNED_UPLOADS_KEY,JSON.stringify(records));
+const newEditToken=()=>{const bytes=crypto.getRandomValues(new Uint8Array(32));return btoa(String.fromCharCode(...bytes)).replaceAll('+','-').replaceAll('/','_').replaceAll('=','')};
+const sha256Hex=async value=>{if(!crypto.subtle)throw Error('目前瀏覽器無法安全建立管理憑證，請使用 HTTPS 或 localhost 開啟網站');const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value));return Array.from(new Uint8Array(bytes),byte=>byte.toString(16).padStart(2,'0')).join('')};
 const uploadPhoto=async photo=>{
  const extension=IMAGE_TYPES[photo.type];
  if(!extension)throw Error('照片僅支援 JPEG、PNG 或 WebP 格式');
@@ -130,13 +137,32 @@ async analyze(f){
  if(!Array.isArray(body?.tags)||body.tags.length>3||!Array.isArray(body.imageCategories)||body.imageCategories.length!==f.photoFiles.length||body.imageCategories.some(category=>typeof category!=='string'))throw Error('AI 回傳格式不完整，請重試');
  return{blocked:false,cat:body.category||'',color:body.color||'',imageCategories:body.imageCategories,other1:body.tags[0]||'',other2:body.tags[1]||'',other3:body.tags[2]||''}
 },
-async report(f){
- const t=f.tags,embedding=await this.embed(itemSearchText(f.title,t)),photoPaths=[];
+async report(f,id,editToken){
+ const t=f.tags,editTokenHash=await sha256Hex(editToken),embedding=await this.embed(itemSearchText(f.title,t)),photoPaths=[];
  for(let i=0;i<f.photoFiles.length;i++)photoPaths.push(f.photoPaths[i]||await uploadPhoto(f.photoFiles[i]));
- const values={id:`PN-${crypto.randomUUID().replaceAll('-','').slice(0,12).toUpperCase()}`,name:f.title.trim(),category:t.cat||'其他',color:t.color,material:'',features:'',other_feature_1:t.other1.trim(),other_feature_2:t.other2.trim(),other_feature_3:t.other3.trim(),keywords:[f.title,t.cat,t.color,t.other1,t.other2,t.other3].filter(Boolean).join(' ').slice(0,1000),embedding,location:f.area==='other'?f.areaOther.trim():f.area,found_at:ymd(new Date()),pickup_location:f.store==='onsite'?'留在原處':f.storeOther.trim(),contact:f.contact.trim(),photos:photoPaths,status:'pending',created_at:new Date().toISOString()};
+ const values={id,name:f.title.trim(),category:t.cat||'其他',color:t.color,material:'',features:'',other_feature_1:t.other1.trim(),other_feature_2:t.other2.trim(),other_feature_3:t.other3.trim(),keywords:[f.title,t.cat,t.color,t.other1,t.other2,t.other3].filter(Boolean).join(' ').slice(0,1000),embedding,location:f.area==='other'?f.areaOther.trim():f.area,found_at:ymd(new Date()),pickup_location:f.store==='onsite'?'留在原處':f.storeOther.trim(),contact:f.contact.trim(),photos:photoPaths,edit_token_hash:editTokenHash,status:'pending',created_at:new Date().toISOString()};
  const rows=await supabaseRequest('/rest/v1/lost_items?select=id,name,category,color,features,other_feature_1,other_feature_2,other_feature_3,keywords,location,found_at,pickup_location,contact,photos,status',{method:'POST',headers:{'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(values)});
  if(!rows?.length)throw Error('通報已送出，但 Supabase 未回傳新增資料');
  return apiItem(rows[0])
+},
+async myItems(){
+ const records=readOwnedUploads();
+ if(!records.length)return[];
+ const items=[];
+ for(let index=0;index<records.length;index+=500){
+  const ownedItems=records.slice(index,index+500).map(({id,token})=>({id,edit_token:token}));
+  const rows=await supabaseRequest('/rest/v1/rpc/get_my_lost_items',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({p_items:ownedItems})});
+  if(!Array.isArray(rows))throw Error('「我的上傳」資料格式錯誤，請稍後再試');
+  items.push(...rows.map(row=>apiItem(row.payload)))
+ }
+ return items
+},
+async edit(item,token,form){
+ const tags={cat:form.category.trim()||'其他',color:form.color.trim(),other1:form.other1.trim(),other2:form.other2.trim(),other3:form.other3.trim()};
+ const embedding=await this.embed(itemSearchText(form.name,tags)),values={name:form.name.trim(),category:tags.cat,color:tags.color,other_feature_1:tags.other1,other_feature_2:tags.other2,other_feature_3:tags.other3,location:form.location.trim(),found_at:form.foundAt,pickup_location:form.pickupLocation.trim(),contact:form.contact.trim(),keywords:[form.name,tags.cat,tags.color,tags.other1,tags.other2,tags.other3].filter(Boolean).join(' ').slice(0,1000)};
+ const updated=await supabaseRequest('/rest/v1/rpc/edit_lost_item',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({p_item_id:item.id,p_edit_token:token,p_item:values,p_embedding:embedding})});
+ if(!updated||typeof updated!=='object')throw Error('更新已送出，但伺服器未回傳更新資料');
+ return apiItem(updated)
 },
 async embed(text){
  ensureConfigured();
@@ -161,7 +187,7 @@ async search(q){
 const itemSearchText=(title,tags)=>[`標題：${title.trim()}`,tags.cat&&`類別：${tags.cat}`,tags.color&&`顏色：${tags.color}`,tags.other1&&`特徵：${tags.other1.trim()}`,tags.other2&&`特徵：${tags.other2.trim()}`,tags.other3&&`特徵：${tags.other3.trim()}`].filter(Boolean).join('\n').trim();
 
 /* ===== 狀態 ===== */
-const fresh=()=>({found:{title:'',photos:[],photoFiles:[],photoPaths:[],area:'總圖書館',areaOther:'',store:'onsite',storeOther:'',contact:'',tags:{cat:'',color:'',other1:'',other2:'',other3:''}},lost:{desc:'',area:'',areaOther:'',from:''},adv:false,res:null,pick:null,last:null,from:'',flt:[],claimed:null,confirm:false,categoryWarning:null,showLowScoreResults:false,err:''});
+const fresh=()=>({found:{title:'',photos:[],photoFiles:[],photoPaths:[],area:'總圖書館',areaOther:'',store:'onsite',storeOther:'',contact:'',tags:{cat:'',color:'',other1:'',other2:'',other3:''}},lost:{desc:'',area:'',areaOther:'',from:''},adv:false,res:null,pick:null,last:null,from:'',flt:[],claimed:null,confirm:false,categoryWarning:null,showLowScoreResults:false,myItems:[],editing:null,editForm:null,err:''});
 let S=fresh(),cur='';
 const set=(p,v)=>{const k=p.split('.'),l=k.pop();k.reduce((o,x)=>o[x],S)[l]=v};
 
@@ -181,8 +207,12 @@ const categoryWarningDialog=({categories})=>`<div class="dlg"><div class="dbox" 
 /* 首頁清單使用 API 載入的待認領物品快取 */
 const pending=()=>{const L=[...DB].sort((a,b)=>b.date.localeCompare(a.date));return`<div style="display:flex;flex-direction:column;gap:12px"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2 style="font-size:16px">尚未領取的遺失物</h2><span class="sub">共 ${L.length} 件</span></div>${L.length?L.map(x=>`<button class="res" data-act="view" data-id="${x.id}" aria-label="查看${esc(x.name)}"><span class="th">${x.photo?`<img src="${x.photo}" alt="">`:ic('cone',26,'#fff',1.8)}</span><span style="flex:1"><b style="font-size:14.5px;display:block">${esc(x.name)}</b><span class="sub" style="display:block;margin-top:3px">拾獲於 ${esc(x.loc)}</span><span class="sub" style="display:block;margin-top:2px">${fmt(x.date)}．${rel(x.date)}</span></span></button>`).join(''):`<div class="card ctr sub" style="padding:28px 16px">目前沒有等待領取的遺失物</div>`}</div>`};
 
-const home=()=>`<div class="hero"><div style="width:76px;height:76px;border-radius:50%;background:rgba(45,90,39,.12);display:grid;place-items:center">${mascot(54)}</div><div><h1>松果在哪裡</h1><span style="font-size:13.5px">中央大學智慧失物招領平台</span></div></div>
-<div class="bd" style="gap:20px;flex:none"><button class="big a" data-go="found-1"><span class="ic">${ic('cone',26,'#fff',1.6)}</span><span style="flex:1"><b>我撿到了一個遺失物</b><small>通報拾獲物品，幫同學找回失物</small></span>${ic('next',20,'#fff')}</button>${sbox()}${pending()}<div style="display:flex;justify-content:flex-end"><button class="to-top" type="button" data-act="scrollToTop" aria-label="回到頁面頂端">${ic('arrowTop',20,'currentColor',2.4)}</button></div></div>`;
+const home=()=>`<div class="hero"><div style="width:76px;height:76px;border-radius:50%;background:rgba(45,90,39,.12);display:grid;place-items:center">${mascot(54)}</div><div><h1>松果在哪裡</h1><span style="font-size:13.5px">中央大學智慧失物招領平台</span></div><button class="profile-btn" type="button" data-act="myItems" aria-label="我的上傳" title="我的上傳">${ic('user',20)}</button></div>
+<div class="bd" style="gap:20px;flex:none"><button class="big a" data-go="found-1"><span class="ic">${ic('cone',26,'#fff',1.6)}</span><span style="flex:1"><b>我撿到了一個遺失物</b><small>通報拾獲物品，幫同學找回失物</small></span>${ic('next',20,'#fff')}</button>${sbox()}${pending()}<footer class="sub" style="text-align:center;margin:10px 0 18px">© NCU PineFinder</footer><div style="display:flex;justify-content:flex-end"><button class="to-top" type="button" data-act="scrollToTop" aria-label="回到頁面頂端">${ic('arrowTop',20,'currentColor',2.4)}</button></div></div>`;
+
+const myUploads=()=>hd('我的上傳','home')+`<div class="bd" style="gap:14px"><p class="p">這裡只會顯示目前瀏覽器記錄的通報。清除瀏覽資料或更換裝置後，將無法在這裡管理原有資料。</p>${S.myItems.length?S.myItems.map(it=>`<div class="card owned-card"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px"><div><h2 style="font-size:17px;line-height:1.4">${esc(it.name)}</h2><span class="sub">${fmt(it.date)}・${esc(it.id)}</span></div><span class="st">${it.status==='claimed'?'已領取':'待認領'}</span></div>${it.photos.length?`<div class="owned-photos" aria-label="已上傳照片（僅供檢視）">${it.photos.map((photo,index)=>`<img src="${photo}" alt="${esc(it.name)}照片 ${index+1}">`).join('')}</div>`:''}<div class="sub">照片僅供檢視，無法在此修改。</div><div class="card" style="display:flex;flex-direction:column;gap:10px;padding:12px">${row('類別／顏色',[it.cat,it.color].filter(Boolean).join('／')||'未填寫')}${row('其他特徵',[it.other1,it.other2,it.other3].filter(Boolean).join('、')||'未填寫')}${row('拾獲地點',it.loc)}${row('領取地點',it.store)}${row('聯絡方式',it.contact||'未提供')}</div>${it.status==='pending'?`<button class="btn g" data-act="editOwned" data-id="${esc(it.id)}">${ic('edit',16)}編輯資料</button>`:`<div class="sub">物品已領取，無法再編輯。</div>`}</div>`).join(''):`<div class="card ctr sub" style="padding:28px 16px">這個瀏覽器目前沒有可管理的通報。新通報成功後會出現在這裡；上線前已建立的資料不會自動加入。</div>`}${err()}</div>`+ft(`<button class="btn g" data-go="home">返回首頁</button>`);
+
+const editUpload=()=>{const f=S.editForm,it=S.editing?.item;if(!f||!it)return'';const field=(label,key,max,type='text')=>`<div><label class="lb" for="edit-${key}">${label}</label><input id="edit-${key}" class="in" type="${type}" maxlength="${max}" data-bind="editForm.${key}" value="${esc(f[key])}"${type==='date'?` max="${ymd(new Date())}"`:''}></div>`;return hd('編輯通報資料','my-items')+`<div class="bd"><p class="p">可修改物品文字資料與聯絡資訊；已上傳照片不提供修改。</p>${field('物品名稱','name',200)}${field('類別','category',80)}${field('顏色','color',100)}${field('其他特徵 1','other1',500)}${field('其他特徵 2','other2',500)}${field('其他特徵 3','other3',500)}<div><label class="lb" for="edit-location">拾獲地點</label>${sel('edit-location','editForm.location',f.location)}${f.location==='other'?`<input class="in" style="margin-top:10px" maxlength="200" data-bind="editForm.locationOther" value="${esc(f.locationOther)}" placeholder="請輸入拾獲地點，如：某棟大樓或場地名稱" aria-label="自填拾獲地點">`:''}</div>${field('拾獲日期','foundAt',10,'date')}<div><span class="lb">失主該去哪裡領取</span><div style="display:flex;flex-direction:column;gap:12px">${[['onsite','留在原處','物品留在拾獲地點附近顯眼處，方便失主原地尋獲'],['other','其他（自填）','自行填寫保管地點']].map(([value,label,description])=>`<button type="button" class="opt${f.pickupChoice===value?' on':''}" data-act="editPickupStore" data-v="${value}"><span class="ico">${ic('pin',20)}</span><span style="flex:1"><b style="font-size:14.5px;display:block">${label}</b><span class="sub" style="display:block;margin-top:3px;line-height:1.5">${description}</span></span>${f.pickupChoice===value?ic('ok',20,'var(--pine)',2.4):''}</button>`).join('')}${f.pickupChoice==='other'?`<input class="in" maxlength="200" data-bind="editForm.pickupLocationOther" value="${esc(f.pickupLocationOther)}" placeholder="請輸入保管地點，如：系辦、警衛室" aria-label="自填保管地點">`:''}</div></div>${field('聯絡方式','contact',200)}${err()}</div>`+ft(`<button class="btn" data-act="saveEdit">儲存修改</button><button class="btn g" data-go="my-items">取消</button>`)};
 
 const found1=()=>{const f=S.found;return hd('通報拾獲物品','home',1)+`<div class="bd"><p class="p">上傳物品照片後，AI 將依照片及標題提供特徵建議</p>
 <div><label class="lb" for="ft">物品標題</label><input id="ft" class="in" data-bind="found.title" value="${esc(f.title)}" placeholder="簡短描述這項物品，如：藍色不鏽鋼水壺"></div>
@@ -228,11 +258,11 @@ ${sens?`<div class="card" style="display:flex;gap:10px;align-items:flex-start;co
 const claimDone=()=>{const it=S.claimed;return`<div class="bd ctr" style="padding-top:64px"><div class="ok">${ic('ok',46,'currentColor',2.2)}</div><div><h2 style="font-size:20px;margin-bottom:8px;line-height:1.5">領取完成！</h2><p class="p" style="font-size:13px">「${esc(it.name)}」已標記為已領取</p></div></div>`+ft(`<button class="btn" data-go="home">返回首頁</button>`)};
 
 /* ===== 路由與事件 ===== */
-const R={home,'found-1':found1,'found-2':found2,'found-done':foundDone,'safety-warning':safetyWarning,'lost-2':lost2,item,'claim-done':claimDone};
-const need={'found-2':()=>S.found.photos.length,'found-done':()=>S.last,'lost-2':()=>S.res,'item':()=>S.pick,'claim-done':()=>S.claimed};
+const R={home,'found-1':found1,'found-2':found2,'found-done':foundDone,'safety-warning':safetyWarning,'lost-2':lost2,item,'claim-done':claimDone,'my-items':myUploads,'edit-item':editUpload};
+const need={'found-2':()=>S.found.photos.length,'found-done':()=>S.last,'lost-2':()=>S.res,'item':()=>S.pick,'claim-done':()=>S.claimed,'edit-item':()=>S.editing&&S.editForm};
 function render(){let k=location.hash.slice(1)||'home';if(!R[k]||(need[k]&&!need[k]())){location.replace('#home');return}
  if(k==='home'&&cur!=='home'&&cur!=='lost-2')S=fresh();if(k!==cur){S.err='';S.confirm=false;cur=k;window.scrollTo(0,0)}
- $('#app').innerHTML=R[k]()+ (k==='found-1'&&S.categoryWarning?categoryWarningDialog(S.categoryWarning):'');{const a=$('[data-autofocus]');a&&a.focus({preventScroll:true})}document.title=k==='home'?'松果在哪裡 PineFinder':k==='safety-warning'?'松果在哪裡｜內容安全提醒':'松果在哪裡｜'+(k.startsWith('found')?'通報拾獲':'協尋失物')}
+ $('#app').innerHTML=R[k]()+ (k==='found-1'&&S.categoryWarning?categoryWarningDialog(S.categoryWarning):'');{const a=$('[data-autofocus]');a&&a.focus({preventScroll:true})}document.title=k==='home'?'松果在哪裡 PineFinder':k==='safety-warning'?'松果在哪裡｜內容安全提醒':k==='my-items'?'松果在哪裡｜我的上傳':k==='edit-item'?'松果在哪裡｜編輯通報':'松果在哪裡｜'+(k.startsWith('found')?'通報拾獲':'協尋失物')}
 const re=()=>{const y=scrollY;render();scrollTo(0,y)},fail=m=>{S.err=m;re()},go=h=>{location.hash=h};
 addEventListener('hashchange',render);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.confirm){S.confirm=false;re()}if(e.key==='Escape'&&S.categoryWarning){S.categoryWarning=null;re()}if(e.key==='Enter'&&e.target.id==='ld')$('[data-act=search]').click()});
@@ -261,7 +291,27 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-go],
   const featureFields=[['其他特徵1',f.tags.other1],['其他特徵2',f.tags.other2],['其他特徵3',f.tags.other3]];
   const combinedFeature=featureFields.find(([,value])=>/[、,，;；\n]/.test(value));
   if(combinedFeature)return fail(`${combinedFeature[0]}請只填一項特徵`);
-  busy('阿果正在藏松果⋯');S.last=await API.report(f);DB.unshift(S.last);busy();go('found-done')}
+  const id=`PN-${crypto.randomUUID().replaceAll('-','').slice(0,12).toUpperCase()}`,token=newEditToken(),records=readOwnedUploads();
+  saveOwnedUploads([...records,{id,token}]);
+  busy('阿果正在藏松果⋯');S.last=await API.report(f,id,token);DB.unshift(S.last);busy();go('found-done')}
+ else if(act==='myItems'){busy('正在載入你的通報⋯');S.myItems=await API.myItems();busy();go('my-items')}
+ else if(act==='editOwned'){
+  const item=S.myItems.find(value=>value.id===id),credential=readOwnedUploads().find(value=>value.id===id);
+  if(!item||!credential)return fail('找不到此筆通報的本機管理資料，請重新載入「我的上傳」');
+  const knownLocations=Object.values(Z).flat(),knownLocation=knownLocations.includes(item.loc),onsite=item.store==='留在原處';
+  S.editing={item,credential};S.editForm={name:item.name,category:item.cat,color:item.color,other1:item.other1,other2:item.other2,other3:item.other3,location:knownLocation?item.loc:'other',locationOther:knownLocation?'':item.loc,foundAt:item.date,pickupChoice:onsite?'onsite':'other',pickupLocationOther:onsite?'':item.store,contact:item.contact};go('edit-item')}
+ else if(act==='editPickupStore'){S.editForm.pickupChoice=v;re()}
+ else if(act==='saveEdit'){
+  const form=S.editForm,item=S.editing?.item;
+  if(!form||!item)return fail('找不到正在編輯的通報，請返回「我的上傳」重新操作');
+  if(!form.name.trim())return fail('請填寫物品名稱');
+  const location=form.location==='other'?form.locationOther.trim():form.location,pickupLocation=form.pickupChoice==='onsite'?'留在原處':form.pickupLocationOther.trim();
+  if(!location)return fail('請選擇或填寫拾獲地點');
+  if(!pickupLocation)return fail('請填寫保管地點');
+  if(!form.foundAt||form.foundAt>ymd(new Date()))return fail('請選擇有效的拾獲日期');
+  const combinedFeature=[['其他特徵 1',form.other1],['其他特徵 2',form.other2],['其他特徵 3',form.other3]].find(([,value])=>/[、,，;；\n]/.test(value));
+  if(combinedFeature)return fail(`${combinedFeature[0]}請只填一項特徵`);
+  busy('正在儲存修改⋯');const updated=await API.edit(item,S.editing.credential.token,{...form,location,pickupLocation});S.myItems=S.myItems.map(value=>value.id===updated.id?updated:value);DB=DB.map(value=>value.id===updated.id?updated:value);S.editing=null;S.editForm=null;busy();go('my-items')}
  else if(act==='showOtherResults'){S.showLowScoreResults=true;re()}
  else if(act==='scrollToTop'){window.scrollTo({top:0,behavior:'smooth'})}
  else if(act==='search'){
@@ -278,4 +328,5 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-go],
 });
 render();
 API.list().then(items=>{DB=items;if(cur==='home')re()}).catch(error=>{S.err=error instanceof Error?error.message:'無法載入遺失物清單';if(cur==='home')re()});
+if(cur==='my-items')API.myItems().then(items=>{S.myItems=items;if(cur==='my-items')re()}).catch(error=>{S.err=error instanceof Error?error.message:'無法載入「我的上傳」';if(cur==='my-items')re()});
 </script></body></html>

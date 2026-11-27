@@ -36,7 +36,7 @@ Browser → GitHub Pages (frontend/)
 
 搜尋會先將使用者描述送至 `embed-text` Edge Function，由 Azure OpenAI Embedding 產生 1536 維向量；通報資料也會以相同模型和相同欄位格式產生向量。Supabase 使用 `pgvector` 搜尋待認領物品，排序依序為標題完全符合、標題／類別／顏色／特徵文字命中、向量語意相似度。搜尋不會使用照片，也不再顯示未校準的相似度百分比。
 
-既有 Supabase 專案請依序在 SQL Editor 執行 [`supabase/migrations/20261123_add_text_embeddings.sql`](supabase/migrations/20261123_add_text_embeddings.sql)、[`supabase/migrations/20261125_remove_subtitle.sql`](supabase/migrations/20261125_remove_subtitle.sql) 與 [`supabase/migrations/20261125_similarity_score_null.sql`](supabase/migrations/20261125_similarity_score_null.sql)；移除副標題的 migration 會將內容拆至空白的其他特徵欄位，若既有欄位空間不足會中止並要求先手動處理，以避免遺失資料。新資料庫則執行 `supabase/setup.sql`。搜尋結果會顯示 cosine similarity 向量分數（小數），僅作排序參考，不代表命中機率；尚未建立向量的舊資料會顯示「尚無向量」。部署 Edge Functions 並設定 secrets：
+既有 Supabase 專案請依序在 SQL Editor 執行 [`supabase/migrations/20261123_add_text_embeddings.sql`](supabase/migrations/20261123_add_text_embeddings.sql)、[`supabase/migrations/20261125_remove_subtitle.sql`](supabase/migrations/20261125_remove_subtitle.sql)、[`supabase/migrations/20261125_similarity_score_null.sql`](supabase/migrations/20261125_similarity_score_null.sql) 與 [`supabase/migrations/20261126_add_browser_owned_item_editing.sql`](supabase/migrations/20261126_add_browser_owned_item_editing.sql)；移除副標題的 migration 會將內容拆至空白的其他特徵欄位，若既有欄位空間不足會中止並要求先手動處理，以避免遺失資料。新資料庫則執行 `supabase/setup.sql`。編輯功能 migration 會通知 PostgREST 重新載入 schema；若 API 仍回報找不到新欄位，請在 SQL Editor 執行 `NOTIFY pgrst, 'reload schema';`，並稍候幾秒再重試。搜尋結果會顯示 cosine similarity 向量分數（小數），僅作排序參考，不代表命中機率；尚未建立向量的舊資料會顯示「尚無向量」。部署 Edge Functions 並設定 secrets：
 
 ```bash
 supabase functions deploy embed-text
@@ -50,6 +50,12 @@ supabase secrets set BACKFILL_SECRET="YOUR-LONG-RANDOM-SECRET"
 ```
 
 `AZURE_OPENAI_ENDPOINT` 與 `AZURE_OPENAI_KEY` 是原有 AI 分析和 Embedding 共用的預設值。若 Embedding 使用另一個 Azure OpenAI Resource，請勿用新值覆蓋原有 secrets；改為另外設定 `AZURE_OPENAI_EMBEDDING_ENDPOINT` 和 `AZURE_OPENAI_EMBEDDING_KEY`。Embedding Functions 會優先使用這兩個專用值，未設定時才回退使用原本的共用值。Azure key 屬於 Resource，不是單一模型部署的專用 key；同一 Resource 中新增模型部署通常沿用同一組 endpoint/key，只需設定新的 `AZURE_OPENAI_EMBEDDING_DEPLOYMENT`。
+
+## 我的上傳與編輯
+
+首頁右上角的「我的上傳」會列出目前瀏覽器提交的通報。每筆新通報會產生一組隨機管理憑證，原始憑證只存在該瀏覽器的 `localStorage`；資料庫只保存 SHA-256 雜湊。讀取個人清單及編輯資料都須提供憑證，資料表仍不開放匿名直接更新。可編輯物品文字、特徵、地點、日期與聯絡方式；照片不可修改，已領取的資料也不可編輯。
+
+這不是帳號登入：清除網站資料、換瀏覽器或換裝置後，管理憑證無法自動復原；上線前建立的舊資料沒有憑證，不會出現在「我的上傳」。同一瀏覽器的其他使用者若能操作該瀏覽器，也能使用其中保存的管理憑證。這項功能適合展示用途，不應用來保護真實個資。
 
 Embedding 使用不同 Azure Resource 時，另外執行以下命令，不會覆蓋原本 AI 分析所用的 endpoint/key：
 
